@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=Aboreto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;700;800;900&display=swap');
+
+/* ================= GLOBAL ================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    font-family: Poppins;
+    font-size: 16px;
+    margin: 0;
+}
+
+:root {
+    --w-image: 500px;
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes showContent {
+    from {
+        clip-path: circle(0% at 70% 50%);
+    }
+
+    to {
+        clip-path: circle(100% at 70% 50%);
+    }
+}
+
+/* ================= CAROUSEL ================= */
+
+.carousel {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.carousel .list {
+    height: 100%;
+    position: relative;
+}
+
+.carousel .list .item {
+    position: absolute;
+    inset: 0;
+    display: none;
+}
+
+.carousel .list .item.active,
+.carousel .list .item.other_1,
+.carousel .list .item.other_2 {
+    display: block;
+}
+
+.carousel .list .item.active {
+    z-index: 2;
+}
+
+.carousel .list .item.other_1,
+.carousel .list .item.other_2 {
+    pointer-events: none;
+}
+
+.carousel .list .item .left {
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.carousel .list .item.active .left {
+    display: block;
+    animation: showContent 1s ease-in-out forwards;
+}
+
+/* ================= IMAGE ================= */
+
+.carousel .image {
+    width: 40%;
+    position: absolute;
+    top: 25%;
+    right: 5%;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.carousel .item.active .image {
+    opacity: 1;
+}
+
+.carousel img {
+    max-width: 100%;
+    filter: drop-shadow(0 30px 15px #9e0c0c55);
+}
+
+/* ================= SLIDE EFFECT ================= */
+
+.next .item.other_1 {
+    z-index: 1;
+}
+
+.next .image {
+    --from: var(--w-image);
+    animation: slideNext .5s ease forwards;
+}
+
+@keyframes slideNext {
+    from {
+        transform: translateX(var(--from));
+    }
+
+    to {
+        transform: translateX(calc(var(--from) - var(--w-image)));
+    }
+}
+
+/* ================= AUTH FORM ================= */
+
+.form-container {
+    background: #ffffff54;
+    border: 2px solid #000;
+    border-radius: 20px;
+    padding: 20px 30px;
+    position: absolute;
+    top: 25%;
+    left: 20%;
+}
+
+.title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 30px;
+}
+
+.form {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid #000;
+    background: #ffffff4e;
+}
+
+.form-btn {
+    padding: 15px;
+    border-radius: 10px;
+    background: teal;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.sign-up-label {
+    margin-top: 10px;
+    font-size: 15px;
+}
+
+.sign-up-link {
+    margin-left: 5px;
+    font-weight: 800;
+    color: teal;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+/* ================= DASHBOARD BASE ================= */
+html,
+body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+.cont {
+    min-height: 100vh;
+    overflow: hidden;
+    background-color: #f5bfaf;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    padding: 30px 30px 10px 30px;
+}
+
+.nav a {
+    font-weight: bold;
+    color: #982835;
+}
+
+.main {
+    min-height: calc(100vh - 50px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+.main h1 {
+    font-family: Impact, sans-serif;
+    letter-spacing: 5px;
+    font-size: 3rem;
+    color: #ffede2;
+    margin-top: 50px;
+    text-align: center;
+}
+
+.main h1 span {
+    font-size: 5rem;
+    color: #982835;
+}
+
+.main p {
+    max-width: 900px;
+    font-size: 1.3rem;
+    text-align: center;
+    color: #bc5a62;
+    margin: 20px 0 50px;
+}
+
+/* ================= DASHBOARD CARD ================= */
+
+.card-container {
+    display: flex;
+    gap: 40px;
+    width: calc(100% - 10rem);
+    justify-content: center;
+}
+
+.card {
+    width: 250px;
+    max-height: 270px;
+    border-radius: 20px;
+    padding: 1rem 1.8rem;
+    position: relative;
+    border: 2px solid #c43a4a;
+    transition: .5s;
+}
+
+.text-title {
+    font-weight: 800;
+    color: #991f2e;
+}
+
+.text-body {
+    font-size: 0.5rem;
+    color: #bc5a62;
+    transform: translateY(-40px);
+}
+
+.card-button {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 125%);
+    width: 60%;
+    padding: .7rem;
+    border-radius: 1rem;
+    background: #982835;
+    color: #fff;
+    opacity: 0;
+    transition: .3s;
+    border: none;
+    outline: none;
+}
+
+.card-button:focus {
+    outline: none;
+}
+
+
+.card:hover {
+    border-color: #982835;
+    box-shadow: 0 4px 18px #9828356d;
+}
+
+.card:hover .card-button {
+    transform: translate(-50%, 50%);
+    opacity: 1;
+}
+
+/* ================= ORGANISER ================= */
+
+.cont.organiser {
+    background: #dedfe1;
+}
+
+.cont.organiser .main h1 {
+    color: #a3a3a3;
+}
+
+.cont.organiser p {
+    color: #2f2a2a;
+}
+
+.cont.organiser .text-title,
+.cont.organiser .nav a,
+.cont.organiser .main h1 span {
+    color: #000;
+}
+
+.cont.organiser .card {
+    border-color: #727272;
+}
+
+.cont.organiser .card:hover {
+    border-color: #2f2a2a;
+    box-shadow: 0 4px 18px 0 #2f2a2a76;
+}
+
+.cont.organiser .card-button {
+    background: #2f2a2a;
+}
+
+/* ================= USER ================= */
+
+.cont.user {
+    background: #dc9174;
+}
+
+.cont.user .main h1 {
+    color: #f9c2ac;
+}
+
+.cont.user p{
+    color: #54200c;
+}
+
+.cont.user .text-title,
+.cont.user .nav a,
+.cont.user .main h1 span {
+    color: #2a0c00;
+}
+
+.cont.user .card {
+    border-color: #874d37;
+}
+
+.cont.user .card-button {
+    background: #54200c;
+}
+
+.cont.user .card:hover {
+    border-color: #54200c;
+    box-shadow: 0 4px 18px 0 #54200c77;
+}
