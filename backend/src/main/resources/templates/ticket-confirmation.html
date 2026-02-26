@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Confirmation - EventMate</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '🎫';
+            font-size: 60px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-top: 10px;
+            font-size: 18px;
+        }
+
+        .content {
+            padding: 40px 30px;
+            color: #e2e8f0;
+        }
+
+        .content p {
+            line-height: 1.7;
+            margin-bottom: 15px;
+            color: #cbd5e1;
+        }
+
+        .ticket-card {
+            background: linear-gradient(145deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 20px;
+            padding: 0;
+            margin: 25px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .ticket-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(59, 130, 246, 0.2));
+            padding: 20px 24px;
+            border-bottom: 1px dashed rgba(139, 92, 246, 0.3);
+        }
+
+        .ticket-id {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #a78bfa;
+        }
+
+        .ticket-code {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+            font-family: 'Courier New', monospace;
+            margin-top: 5px;
+        }
+
+        .ticket-body {
+            padding: 24px;
+        }
+
+        .ticket-row {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .ticket-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ticket-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .ticket-value {
+            font-size: 15px;
+            color: #f8fafc;
+            font-weight: 500;
+        }
+
+        .ticket-decoration {
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #0f0c29, #302b63);
+            border-radius: 50%;
+        }
+
+        .group-section {
+            background: linear-gradient(145deg, rgba(6, 182, 212, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .group-section h3 {
+            color: #06b6d4;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+
+        .group-section p {
+            margin-bottom: 10px;
+        }
+
+        .group-code {
+            display: inline-block;
+            background: rgba(6, 182, 212, 0.2);
+            color: #22d3ee;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            margin: 10px 0;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .reminder {
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .reminder p {
+            margin: 0;
+            font-size: 14px;
+            color: #a78bfa;
+        }
+
+        .footer {
+            padding: 25px 30px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #64748b;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>You're Going!</h1>
+            <p th:text="${eventName}">Event Name</p>
+        </div>
+        <div class="content">
+            <p>Hi <span th:text="${userName}">User</span>! 🎉</p>
+            <p>Congratulations! Your ticket has been confirmed. Here are your booking details:</p>
+
+            <div class="ticket-card">
+                <div class="ticket-header">
+                    <div class="ticket-id">Ticket ID</div>
+                    <div class="ticket-code" th:text="${ticketCode}">EVT-12345</div>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-row">
+                        <span class="ticket-label">Event</span>
+                        <span class="ticket-value" th:text="${eventName}">Tech Summit</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Date</span>
+                        <span class="ticket-value" th:text="${eventDate}">Jan 01, 2026</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Venue</span>
+                        <span class="ticket-value" th:text="${venue}">Main Hall</span>
+                    </div>
+                </div>
+                <div class="ticket-decoration"></div>
+            </div>
+
+            <div th:if="${groupCode != null}" class="group-section">
+                <h3>🎊 Group Invite</h3>
+                <p>You created a group! Share this code with friends:</p>
+                <div class="group-code" th:text="${groupCode}">CODE123</div>
+                <p style="margin-top: 15px;">
+                    <a th:href="${inviteLink}" class="button">Invite Friends</a>
+                </p>
+            </div>
+
+            <div class="reminder">
+                <p>📱 Show your Ticket ID at the entrance for quick check-in!</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>© 2025 EventMate. Creating memorable experiences.</p>
+        </div>
+    </div>
+</body>
+
+</html>
