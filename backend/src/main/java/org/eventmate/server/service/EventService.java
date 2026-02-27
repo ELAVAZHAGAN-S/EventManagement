@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.hibernate.Hibernate;
 
 @Service
 @RequiredArgsConstructor
@@ -234,11 +235,20 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public List<EventResponse> getEventsByOrganizer(Long organizerId) {
-        return eventRepository.findByOrganizerId(organizerId).stream()
-                .map(this::toEventResponse)
-                .collect(Collectors.toList());
-    }
+    @Transactional(readOnly = true)
+public List<EventResponse> getEventsByOrganizer(Long organizerId) {
+
+    List<Event> events =
+            eventRepository.findByOrganizerIdWithTicketTiers(organizerId);
+
+    events.forEach(event -> {
+        Hibernate.initialize(event.getGuests());
+    });
+
+    return events.stream()
+            .map(this::toEventResponse)
+            .collect(Collectors.toList());
+}
 
     public EventResponse getEventById(Long eventId) {
         Event event = eventRepository.findById(eventId)

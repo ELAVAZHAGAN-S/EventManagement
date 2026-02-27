@@ -32,4 +32,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.status = 'ACTIVE' AND e.deletedAt IS NULL ORDER BY e.startDate ASC")
     List<Event> findActiveEventsForAttendee();
+
+    @Query("""
+SELECT DISTINCT e FROM Event e
+LEFT JOIN FETCH e.ticketTiers
+WHERE e.organizerId = :organizerId
+""")
+List<Event> findByOrganizerIdWithTicketTiers(Long organizerId);
 }

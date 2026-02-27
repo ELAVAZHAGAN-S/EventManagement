@@ -6,6 +6,7 @@
 *.md
 !README.md
 !**/README.md
+,log
 
 # Sensitive & System Files
 .env
