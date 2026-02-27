@@ -101,7 +101,9 @@ const OrgDashboard = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <p className="text-sm font-medium text-slate-400">Total Attendees</p>
-                            <h3 className="text-2xl font-bold text-slate-100 mt-2">{stats.totalAttendees}</h3>
+                            <h3 className="text-2xl font-bold text-slate-100 mt-2">
+                                {Number(stats.totalAttendees) || 0}
+                            </h3>
                         </div>
                         <div className="p-2 bg-pink-500/20 text-pink-400 rounded-lg">
                             <HiUserGroup className="w-5 h-5" />

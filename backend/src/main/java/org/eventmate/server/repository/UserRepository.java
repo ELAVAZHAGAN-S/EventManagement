@@ -5,6 +5,7 @@ import org.eventmate.server.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
 
 // JpaRepository gives us free methods like save(), delete(), findById()
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -24,4 +25,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Search users by name or email
     List<User> findByFullNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String name, String email);
+
+    @Query("""
+SELECT u FROM User u
+LEFT JOIN FETCH u.socialLinks
+WHERE u.email = :email
+""")
+Optional<User> findByEmailWithSocialLinks(String email);
 }

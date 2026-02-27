@@ -52,6 +52,7 @@ public class AuthService {
         User user = createUserFromRequest(request);
         
         // Save user to database
+        @SuppressWarnings("null")
         User savedUser = userRepository.save(user);
         log.info("User registered successfully with ID: {}", savedUser.getUserId());
         
