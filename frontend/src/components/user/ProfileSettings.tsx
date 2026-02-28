@@ -72,12 +72,24 @@ const ProfileSettings = () => {
     };
 
     const handleSave = async () => {
+        if (!formData) return;
+
+        const payload = {
+            name: formData.fullName,
+            phoneNumber: formData.phoneNumber,
+            bio: formData.bio,
+            website: formData.website,
+            areaOfInterest: formData.areaOfInterest,
+            profilePicture: formData.profilePicture,
+            socialLinks: formData.socialLinks
+        };
+
         try {
-            const updated = await userService.updateProfile(formData);
+            const updated = await userService.updateProfile(payload);
             setUser(updated);
             setIsEditing(false);
             toast.success("Profile updated successfully!");
-        } catch (e: any) {
+        } catch (e) {
             console.error(e);
             toast.error("Failed to save profile.");
         }
@@ -177,7 +189,7 @@ const ProfileSettings = () => {
                 <div className="lg:col-span-1 space-y-6">
                     <div className="glass-card p-8 flex flex-col items-center text-center relative overflow-hidden">
                         {/* Decorative Background */}
-                        <div className="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-violet-600 to-blue-600"></div>
+                        <div className="absolute top-0 left-0 w-full h-24 bg-linear-to-r from-violet-600 to-blue-600"></div>
 
                         {/* Profile Picture (Pointer / Circular) */}
                         <div className="relative mt-8 mb-4 group">
@@ -223,13 +235,13 @@ const ProfileSettings = () => {
                                         <div className="flex-1 flex gap-2">
                                             <input
                                                 placeholder="Platform"
-                                                value={link.platformName}
+                                                value={link.platformName ?? ""}
                                                 onChange={e => handleSocialLinkChange(idx, 'platformName', e.target.value)}
                                                 className="glass-input w-1/3 text-xs p-2"
                                             />
                                             <input
                                                 placeholder="URL"
-                                                value={link.url}
+                                                value={link.url ?? ""}
                                                 onChange={e => handleSocialLinkChange(idx, 'url', e.target.value)}
                                                 className="glass-input w-2/3 text-xs p-2"
                                             />
@@ -268,7 +280,7 @@ const ProfileSettings = () => {
                                     <input
                                         type="text"
                                         name="fullName"
-                                        value={formData?.fullName}
+                                        value={formData?.fullName ?? ""}
                                         onChange={handleChange}
                                         className="glass-input w-full"
                                     />

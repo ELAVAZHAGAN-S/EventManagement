@@ -229,30 +229,44 @@ public class EventService {
         eventRepository.delete(event);
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> getAllEvents() {
-        return eventRepository.findAll().stream()
+
+        List<Event> events = eventRepository.findAll();
+
+        events.forEach(event -> {
+            Hibernate.initialize(event.getTicketTiers());
+            Hibernate.initialize(event.getGuests());
+        });
+
+        return events.stream()
                 .map(this::toEventResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-public List<EventResponse> getEventsByOrganizer(Long organizerId) {
+    public List<EventResponse> getEventsByOrganizer(Long organizerId) {
 
-    List<Event> events =
-            eventRepository.findByOrganizerIdWithTicketTiers(organizerId);
+        List<Event> events = eventRepository.findByOrganizerIdWithTicketTiers(organizerId);
 
-    events.forEach(event -> {
-        Hibernate.initialize(event.getGuests());
-    });
+        events.forEach(event -> {
+            Hibernate.initialize(event.getGuests());
+        });
 
-    return events.stream()
-            .map(this::toEventResponse)
-            .collect(Collectors.toList());
-}
+        return events.stream()
+                .map(this::toEventResponse)
+                .collect(Collectors.toList());
+    }
 
+    @Transactional(readOnly = true)
     public EventResponse getEventById(Long eventId) {
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+
+        Hibernate.initialize(event.getTicketTiers());
+        Hibernate.initialize(event.getGuests());
+
         return toEventResponse(event);
     }
 
@@ -268,16 +282,33 @@ public List<EventResponse> getEventsByOrganizer(Long organizerId) {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> getUpcomingEvents() {
-        return eventRepository.findUpcomingEvents(LocalDateTime.now()).stream()
+
+        List<Event> events = eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
+
+        events.forEach(event -> {
+            Hibernate.initialize(event.getTicketTiers());
+            Hibernate.initialize(event.getGuests());
+        });
+
+        return events.stream()
                 .map(this::toEventResponse)
+                .filter(e -> e.getStatus() == Event.EventStatus.PLANNED)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> getAllEventsForAttendee() {
-        // Return all non-deleted, active/completed events (including ended ones)
-        return eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc().stream()
-                .filter(e -> e.getStatus() == Event.EventStatus.ACTIVE || e.getStatus() == Event.EventStatus.COMPLETED)
+
+        List<Event> events = eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
+
+        events.forEach(event -> {
+            Hibernate.initialize(event.getTicketTiers());
+            Hibernate.initialize(event.getGuests());
+        });
+
+        return events.stream()
                 .map(this::toEventResponse)
                 .collect(Collectors.toList());
     }
@@ -288,9 +319,12 @@ public List<EventResponse> getEventsByOrganizer(Long organizerId) {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<EventResponse> getActiveEventsForAttendee() {
-        return eventRepository.findActiveEventsForAttendee().stream()
+        return eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc()
+                .stream()
                 .map(this::toEventResponse)
+                .filter(e -> e.getStatus() == Event.EventStatus.ACTIVE)
                 .collect(Collectors.toList());
     }
 
@@ -301,6 +335,9 @@ public List<EventResponse> getEventsByOrganizer(Long organizerId) {
     }
 
     private EventResponse toEventResponse(Event event) {
+
+        updateEventStatusIfNeeded(event);
+
         Long enrolledCount = bookingRepository.countConfirmedBookings(event.getEventId());
         Double avgRating = feedbackRepository.getAverageRating(event.getEventId());
 
@@ -378,6 +415,29 @@ public List<EventResponse> getEventsByOrganizer(Long organizerId) {
         }
         if (eventFormat == Event.EventFormat.HYBRID && (venueId == null || meetingUrl == null)) {
             throw new ValidationException("Both venue and meeting URL are required for HYBRID events");
+        }
+    }
+
+    private void updateEventStatusIfNeeded(Event event) {
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (event.getStartDate() == null || event.getEndDate() == null)
+            return;
+
+        Event.EventStatus newStatus;
+
+        if (now.isBefore(event.getStartDate())) {
+            newStatus = Event.EventStatus.PLANNED;
+        } else if (now.isAfter(event.getEndDate())) {
+            newStatus = Event.EventStatus.COMPLETED;
+        } else {
+            newStatus = Event.EventStatus.ACTIVE;
+        }
+
+        if (event.getStatus() != newStatus) {
+            event.setStatus(newStatus);
+            eventRepository.save(event);
         }
     }
 }

@@ -7,9 +7,15 @@ import java.util.List;
 public class UserProfileResponse {
 
     private Long id;
-    private String name;
+    private String fullName;
     private String email;
     private String role;
+
+    private String phoneNumber;
+    private String areaOfInterest;
+    private String bio;
+    private String profilePicture;
+
     private List<SocialLinkDTO> socialLinks;
 
     @Data
