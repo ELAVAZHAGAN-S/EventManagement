@@ -5,212 +5,232 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Reminder - EventMate</title>
+
     <style>
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            background: #f5f7fb;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
+        .wrapper {
+            width: 100%;
+            padding: 50px 16px;
         }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.1);
-        }
-
-        .header {
-            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
-            padding: 40px 30px;
-            text-align: center;
-            position: relative;
+        .mail {
+            max-width: 720px;
+            margin: auto;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
             overflow: hidden;
         }
 
-        .header::before {
-            content: '✨';
-            position: absolute;
-            top: 20px;
-            left: 30px;
-            font-size: 24px;
-            animation: float 3s ease-in-out infinite;
+        /* NAVBAR */
+        .nav {
+            padding: 18px 28px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
         }
 
-        .header::after {
-            content: '🎉';
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 24px;
-            animation: float 3s ease-in-out infinite 0.5s;
-        }
-
-        @keyframes float {
-
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .header h1 {
-            color: white;
-            font-size: 28px;
-            font-weight: 700;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.9);
-            margin-top: 8px;
+        .brand {
             font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
         }
 
-        .content {
-            padding: 40px 30px;
-            color: #e2e8f0;
+        /* HERO */
+        .hero {
+            padding: 34px 32px 10px 32px;
         }
 
-        .content h2 {
-            color: #f8fafc;
-            margin-bottom: 20px;
-            font-size: 22px;
+        .hero h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
         }
 
-        .content p {
+        .hero p {
+            margin-top: 8px;
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* GRID SYSTEM */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 24px 32px 40px 32px;
+        }
+
+        /* TRENDING CARD */
+        .card {
+            background: #ffffff;
+            border: 1px solid #e6e8ec;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 19px;
+        }
+
+        .card p {
+            font-size: 15px;
             line-height: 1.7;
-            margin-bottom: 15px;
-            color: #cbd5e1;
+            color: #4b5563;
         }
 
-        .event-card {
-            background: linear-gradient(145deg, rgba(139, 92, 246, 0.15), rgba(59, 130, 246, 0.1));
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 16px;
-            padding: 24px;
-            margin: 25px 0;
+        /* EVENT DETAILS BOX */
+        .details {
+            margin: 24px 0;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        .event-card .label {
-            font-size: 12px;
+        .row {
+            padding: 16px 18px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #a78bfa;
+            color: #9ca3af;
             margin-bottom: 4px;
         }
 
-        .event-card .value {
-            font-size: 16px;
-            color: #f8fafc;
-            font-weight: 500;
-        }
-
-        .event-card .row {
-            margin-bottom: 16px;
-        }
-
-        .event-card .row:last-child {
-            margin-bottom: 0;
-        }
-
-        .countdown {
-            display: inline-block;
-            background: linear-gradient(135deg, #8b5cf6, #3b82f6);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
+        .value {
+            font-size: 15px;
             font-weight: 600;
-            margin-top: 10px;
+            color: #111827;
+        }
+
+        /* BUTTON */
+        .cta {
+            text-align: center;
+            margin-top: 26px;
         }
 
         .button {
             display: inline-block;
-            padding: 14px 32px;
-            background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 50%, #3b82f6 100%);
-            color: white;
+            padding: 14px 30px;
+            background: #111827;
+            color: #ffffff;
             text-decoration: none;
-            border-radius: 12px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+            font-size: 15px;
         }
 
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.5);
-        }
-
+        /* FOOTER */
         .footer {
-            padding: 25px 30px;
             text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: #64748b;
+            padding: 22px;
+            border-top: 1px solid #e5e7eb;
             font-size: 13px;
+            color: #6b7280;
+            background: #fafafa;
         }
 
         .footer a {
-            color: #a78bfa;
+            color: #111827;
             text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media(max-width:600px) {
+            .grid {
+                padding: 20px;
+            }
+
+            .hero {
+                padding: 28px 20px 8px 20px;
+            }
+
+            .nav {
+                padding: 16px 20px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🎊 Don't Miss Out!</h1>
-            <p>Your event is coming up soon</p>
-        </div>
-        <div class="content">
-            <h2>Hi <span th:text="${name}">User</span>! 👋</h2>
 
-            <p>Get ready for an amazing experience! Here's a reminder about your upcoming event:</p>
+    <div class="wrapper">
+        <div class="mail">
 
-            <div class="event-card">
-                <div class="row">
-                    <div class="label">Event</div>
-                    <div class="value" th:text="${event.title}">Event Name</div>
-                </div>
-                <div class="row">
-                    <div class="label">Date & Time</div>
-                    <div class="value" th:text="${eventDate}">Date</div>
-                </div>
-                <div class="row">
-                    <div class="label">Location</div>
-                    <div class="value" th:text="${event.venue != null ? event.venue.name : '🌐 Virtual Event'}">Location
-                    </div>
-                </div>
+            <div class="nav">
+                <div class="brand">EventMate</div>
             </div>
 
-            <p>We can't wait to see you there! Make sure to arrive a bit early to get settled in.</p>
+            <div class="hero">
+                <h1>🎊 Don't Miss Out!</h1>
+                <p>Your event is coming up soon</p>
+            </div>
 
-            <p style="text-align: center; margin-top: 30px;">
-                <a th:href="@{'http://localhost:5173/events/' + ${event.eventId}}" class="button">
-                    ✨ View Event Details
-                </a>
-            </p>
-        </div>
-        <div class="footer">
-            <p>© 2025 <a href="#">EventMate</a>. Creating memorable experiences.</p>
+            <div class="grid">
+
+                <div class="card">
+
+                    <h2>Hi <span th:text="${name}">User</span>! 👋</h2>
+
+                    <p>Get ready for an amazing experience! Here's a reminder about your upcoming event:</p>
+
+                    <div class="details">
+
+                        <div class="row">
+                            <div class="label">Event</div>
+                            <div class="value" th:text="${event.title}">Event Name</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="label">Date & Time</div>
+                            <div class="value" th:text="${eventDate}">Date</div>
+                        </div>
+
+                        <div class="row">
+                            <div class="label">Location</div>
+                            <div class="value" th:text="${event.venue != null ? event.venue.name : '🌐 Virtual Event'}">
+                                Location</div>
+                        </div>
+
+                    </div>
+
+                    <p>We can't wait to see you there! Make sure to arrive a bit early to get settled in.</p>
+
+                    <div class="cta">
+                        <a th:href="@{'http://localhost:5173/events/' + ${event.eventId}}" class="button">
+                            ✨ View Event Details
+                        </a>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="footer">
+                <p>© 2026 <a href="#">EventMate</a>. Creating memorable experiences.</p>
+            </div>
+
         </div>
     </div>
+
 </body>
 
 </html>
