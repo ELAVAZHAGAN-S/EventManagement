@@ -1,6 +1,6 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { LayoutDashboard, Calendar, MapPin, User, Sparkles } from 'lucide-react';
+import { LayoutDashboard, Calendar, MapPin, User, Sparkles, Ticket } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 
 const OrgLayout = () => {
@@ -15,6 +15,7 @@ const OrgLayout = () => {
     const navItems = [
         { name: 'Dashboard', path: '/org/dashboard', icon: LayoutDashboard },
         { name: 'My Events', path: '/org/events', icon: Calendar },
+        { name: 'Coupons', path: '/org/coupons', icon: Ticket },
         { name: 'Venues', path: '/org/venues', icon: MapPin },
         { name: 'Profile', path: '/org/profile', icon: User },
     ];

@@ -21,6 +21,8 @@ import OrgEventDetails from './pages/org/OrgEventDetails';
 import OrgVenues from './pages/org/OrgVenues';
 import CreateEditVenue from './pages/org/CreateEditVenue';
 import OrgProfile from './pages/org/OrgProfile';
+import OrgCoupons from './pages/org/OrgCoupons';
+import EventCoupons from './pages/org/EventCoupons';
 
 // Admin Imports
 import AdminLayout from './components/layout/AdminLayout';
@@ -64,6 +66,8 @@ const App = () => {
             <Route path="venues/new" element={<CreateEditVenue />} />
             <Route path="venues/edit/:id" element={<CreateEditVenue />} />
             <Route path="profile" element={<OrgProfile />} />
+            <Route path="coupons" element={<OrgCoupons />} />
+            <Route path="coupons/:eventId" element={<EventCoupons />} />
           </Route>
         </Route>
 
