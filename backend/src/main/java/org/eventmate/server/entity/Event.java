@@ -130,9 +130,6 @@ public class Event {
     @Column(name = "allow_coupon")
     private Boolean allowCoupon = false;
 
-    @Column(name = "coupon_code")
-    private String couponCode;
-
     @Column(name = "discount_percentage")
     private Double discountPercentage = 0.0;
 

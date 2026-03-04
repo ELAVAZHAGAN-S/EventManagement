@@ -205,6 +205,17 @@ export const orgService = {
     const response = await api.get(`/feedback/event/${eventId}/rating`);
     return response.data;
   },
+
+  // Coupons
+  getEventsWithCoupons: async () => {
+    const response = await api.get('/coupons/events');
+    return response.data;
+  },
+
+  getEventCoupons: async (eventId: number | string) => {
+    const response = await api.get(`/coupons/event/${eventId}`);
+    return response.data;
+  },
 };
 
 export const notificationService = {

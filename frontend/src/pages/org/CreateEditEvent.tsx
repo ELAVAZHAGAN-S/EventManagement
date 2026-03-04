@@ -9,13 +9,27 @@ import { EventTypeSelector, CommonTextField } from './EventFormComponents';
 import { useForm, FormProvider } from 'react-hook-form';
 import GuestEntryModal from './GuestEntryModal';
 
+type TicketTier = {
+    name: string
+    price: number
+    capacity: number
+    description: string
+}
+
 const CreateEditEvent = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const isEditMode = !!id;
     const [loading, setLoading] = useState(false);
     const [bookedVenues, setBookedVenues] = useState<any[]>([]);
-
+    const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([
+        {
+            name: "",
+            price: 0,
+            capacity: 0,
+            description: ""
+        }
+    ])
     // Guest Modal State
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(false);
 
@@ -49,10 +63,10 @@ const CreateEditEvent = () => {
             meetingUrl: '',
 
             // Tickets & Discounts
-            ticketType: 'FREE',
+            ticketType: 'PAID',
             ticketPrice: 0,
             allowCoupon: false,
-            couponCode: '',
+            couponCount: 50,
             discountPercentage: 0,
             allowMembershipDiscount: false,
 
@@ -64,18 +78,50 @@ const CreateEditEvent = () => {
             customDetails: {},
 
             // Legacy/Unused or Defaulted
-            ticketTiers: []
+            ticketTiers: ticketTiers
         }
     });
+
+    const addTicketTier = () => {
+        setTicketTiers([
+            ...ticketTiers,
+            { name: "", price: 0, capacity: 0, description: "" }
+        ])
+    }
+
+    const removeTicketTier = (index: number) => {
+        const updated = [...ticketTiers]
+        updated.splice(index, 1)
+        setTicketTiers(updated)
+    }
+
+    const updateTicketTier = (
+        index: number,
+        field: keyof TicketTier,
+        value: string | number
+    ) => {
+        const updated = [...ticketTiers]
+        updated[index] = {
+            ...updated[index],
+            [field]: value
+        }
+        setTicketTiers(updated)
+    }
 
     const { handleSubmit, reset, watch, setValue, register } = methods;
     const watchStatus = watch('status');
     const watchEventFormat = watch('eventFormat');
-    const watchTicketType = watch('ticketType');
     const watchAllowCoupon = watch('allowCoupon');
     const watchGuests = watch('guests') || [];
     const watchVenueId = watch('venueId');
     const watchMeetingUrl = watch('meetingUrl');
+
+    useEffect(() => {
+        if (!watchAllowCoupon) {
+            setValue("couponCount", 0)
+            setValue("discountPercentage", 0)
+        }
+    }, [watchAllowCoupon])
 
     // Determine if Launch is allowed
     const isLaunchAllowed = () => {
@@ -115,6 +161,9 @@ const CreateEditEvent = () => {
         setLoading(true);
         try {
             const data = await orgService.getEventDetails(id);
+            if (data.ticketTiers) {
+                setTicketTiers(data.ticketTiers)
+            }
 
             // Helper to format ISO date to datetime-local format (YYYY-MM-DDTHH:mm)
             const formatDateForInput = (dateString: string | null | undefined) => {
@@ -131,16 +180,14 @@ const CreateEditEvent = () => {
                 venueId: data.venue?.venueId ? data.venue.venueId.toString() : (data.venueId ? data.venueId.toString() : ''),
                 customDetails: data.customDetails || {},
                 guests: data.guests || [],
-                // Format dates for datetime-local input
                 startDate: formatDateForInput(data.startDate),
                 endDate: formatDateForInput(data.endDate),
                 registrationOpenDate: formatDateForInput(data.registrationOpenDate),
                 registrationCloseDate: formatDateForInput(data.registrationCloseDate),
                 resultsDate: formatDateForInput(data.resultsDate),
-                // Ensure defaults for new fields if they don't exist in old data
                 ticketPrice: data.ticketPrice || 0,
                 allowCoupon: data.allowCoupon || false,
-                couponCode: data.couponCode || '',
+                couponCount: data.couponCount || 50,
                 discountPercentage: data.discountPercentage || 0,
                 allowMembershipDiscount: data.allowMembershipDiscount || false
             });
@@ -188,6 +235,8 @@ const CreateEditEvent = () => {
                 totalCapacity: data.totalCapacity ? parseInt(data.totalCapacity.toString()) : null,
                 ticketPrice: data.ticketType === 'PAID' ? parseFloat(data.ticketPrice) : 0,
                 discountPercentage: data.allowCoupon ? parseFloat(data.discountPercentage) : 0,
+                couponCount: data.allowCoupon ? data.couponCount : 0,
+                ticketTiers: ticketTiers
             };
 
             if (isEditMode && id) {
@@ -378,34 +427,117 @@ const CreateEditEvent = () => {
                             <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">6. Tickets & Pricing</h3>
 
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-300 mb-2">Ticket Type</label>
-                                    <div className="flex gap-4">
-                                        {['FREE', 'PAID'].map(type => (
-                                            <label key={type} className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors
-                                                ${watchTicketType === type ? 'bg-green-500/20 border-green-500/50 text-green-300' : 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-300'}`}>
-                                                <input type="radio" value={type} {...register('ticketType')} className="w-4 h-4 text-green-600" />
-                                                <span className="font-medium">{type}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
 
-                                {watchTicketType === 'PAID' && (
-                                    <div className="w-full md:w-1/3 animate-in fade-in">
-                                        <label className="block text-sm font-medium text-slate-300 mb-1">Ticket Price (₹)</label>
-                                        <input
-                                            type="number"
-                                            {...register('ticketPrice')}
-                                            className="glass-input w-full"
-                                        />
-                                    </div>
-                                )}
+                                <div className="w-full md:w-1/3 animate-in fade-in">
+                                    <label className="block text-sm font-medium text-slate-300 mb-1">Ticket Price (₹)</label>
+                                    <input
+                                        type="number"
+                                        {...register('ticketPrice')}
+                                        className="glass-input w-full"
+                                    />
+                                </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4 pt-4">
                                     <CommonTextField name="totalCapacity" label="Total Seat Capacity" type="number" />
                                 </div>
                             </div>
+                        </section>
+
+                        <section className="space-y-6">
+                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">
+                                Ticket Types
+                            </h3>
+
+                            {ticketTiers.map((tier, index) => (
+                                <div
+                                    key={index}
+                                    className="p-6 bg-white/5 border border-white/10 rounded-xl space-y-4 animate-in fade-in"
+                                >
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                                Ticket Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g. Early Bird"
+                                                value={tier.name}
+                                                onChange={(e) =>
+                                                    updateTicketTier(index, "name", e.target.value)
+                                                }
+                                                className="glass-input w-full"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                                Price (₹)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                placeholder="0"
+                                                value={tier.price}
+                                                onChange={(e) =>
+                                                    updateTicketTier(index, "price", Number(e.target.value))
+                                                }
+                                                className="glass-input w-full"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                                Capacity
+                                            </label>
+                                            <input
+                                                type="number"
+                                                placeholder="Number of Tickets"
+                                                value={tier.capacity}
+                                                onChange={(e) =>
+                                                    updateTicketTier(index, "capacity", Number(e.target.value))
+                                                }
+                                                className="glass-input w-full"
+                                            />
+                                        </div>
+
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                                            Description
+                                        </label>
+                                        <input
+                                            type="text"
+                                            placeholder="Optional description"
+                                            value={tier.description}
+                                            onChange={(e) =>
+                                                updateTicketTier(index, "description", e.target.value)
+                                            }
+                                            className="glass-input w-full"
+                                        />
+                                    </div>
+
+                                    {ticketTiers.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeTicketTier(index)}
+                                            className="text-red-400 hover:text-red-500 text-sm font-medium transition-colors"
+                                        >
+                                            Remove Ticket Type
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+
+                            <button
+                                type="button"
+                                onClick={addTicketTier}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium shadow-md transition-all bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                            >
+                                <Plus size={16} />
+                                Add Ticket Type
+                            </button>
                         </section>
 
                         {/* 7. Discounts */}
@@ -421,10 +553,24 @@ const CreateEditEvent = () => {
                                 </label>
 
                                 {watchAllowCoupon && (
+
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-8 animate-in fade-in">
-                                        <CommonTextField name="couponCode" label="Coupon Code" placeholder="e.g. EARLYBIRD25" />
-                                        <CommonTextField name="discountPercentage" label="Discount Percentage (%)" type="number" />
+
+                                        <CommonTextField
+                                            name="couponCount"
+                                            label="Number of Coupons"
+                                            type="number"
+                                            placeholder="e.g. 50"
+                                        />
+
+                                        <CommonTextField
+                                            name="discountPercentage"
+                                            label="Discount Percentage (%)"
+                                            type="number"
+                                        />
+
                                     </div>
+
                                 )}
 
                                 <label className="flex items-center gap-3 p-4 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
@@ -438,7 +584,7 @@ const CreateEditEvent = () => {
                         </section>
 
                         {/* Footer Actions */}
-                        <div className="pt-8 border-t border-white/10 flex justify-end gap-4 sticky bottom-0 bg-[#0f172a]/95 backdrop-blur py-4 z-10">
+                        <div className="flex justify-end gap-4 sticky bottom-0 pt-2 py-4 z-10">
                             <button type="button" onClick={() => navigate('/org/events')} className="px-6 py-2.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg font-medium transition-colors">
                                 Cancel
                             </button>

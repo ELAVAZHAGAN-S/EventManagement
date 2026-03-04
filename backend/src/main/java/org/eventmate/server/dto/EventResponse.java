@@ -42,7 +42,6 @@ public class EventResponse {
     private LocalDateTime resultsDate;
     private Double ticketPrice;
     private Boolean allowCoupon;
-    private String couponCode;
     private Double discountPercentage;
     private Boolean allowMembershipDiscount;
     private Boolean isFeatured;

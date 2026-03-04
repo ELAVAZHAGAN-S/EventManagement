@@ -57,7 +57,7 @@ public class EventRequest {
     private java.util.List<TicketTierRequest> ticketTiers;
     private Double ticketPrice;
     private Boolean allowCoupon;
-    private String couponCode;
+    private Integer couponCount;
     private Double discountPercentage;
     private Boolean allowMembershipDiscount;
 

@@ -23,6 +23,28 @@ public class EventService {
     private final VenueRepository venueRepository;
     private final BookingRepository bookingRepository;
     private final FeedbackRepository feedbackRepository;
+    private final CouponCodeRepository couponCodeRepository;
+
+    private void generateCoupons(Long eventId, Integer count) {
+
+        for (int i = 0; i < count; i++) {
+
+            CouponCode coupon = new CouponCode();
+
+            String code = "EVT" + java.util.UUID.randomUUID()
+                    .toString()
+                    .substring(0, 6)
+                    .toUpperCase();
+
+            coupon.setCode(code);
+            coupon.setEventId(eventId);
+            coupon.setIsUsed(false);
+
+            couponCodeRepository.save(coupon);
+
+        }
+
+    }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Event createEvent(EventRequest request, Long organizerId) {
@@ -67,7 +89,6 @@ public class EventService {
         // New Fields
         event.setTicketPrice(request.getTicketPrice());
         event.setAllowCoupon(request.getAllowCoupon());
-        event.setCouponCode(request.getCouponCode());
         event.setDiscountPercentage(request.getDiscountPercentage());
         event.setAllowMembershipDiscount(request.getAllowMembershipDiscount());
 
@@ -115,6 +136,15 @@ public class EventService {
         }
 
         Event savedEvent = eventRepository.save(event);
+        if (request.getAllowCoupon() != null && request.getAllowCoupon()) {
+
+            if (request.getCouponCount() != null && request.getCouponCount() > 0) {
+
+                generateCoupons(savedEvent.getEventId(), request.getCouponCount());
+
+            }
+
+        }
         log.info("Event created successfully with ID: {}", savedEvent.getEventId());
         return savedEvent;
     }
@@ -168,7 +198,6 @@ public class EventService {
         // New Fields
         event.setTicketPrice(request.getTicketPrice());
         event.setAllowCoupon(request.getAllowCoupon());
-        event.setCouponCode(request.getCouponCode());
         event.setDiscountPercentage(request.getDiscountPercentage());
         event.setAllowMembershipDiscount(request.getAllowMembershipDiscount());
 
@@ -375,7 +404,6 @@ public class EventService {
                 event.getResultsDate(),
                 event.getTicketPrice(),
                 event.getAllowCoupon(),
-                event.getCouponCode(),
                 event.getDiscountPercentage(),
                 event.getAllowMembershipDiscount(),
                 event.getIsFeatured());
