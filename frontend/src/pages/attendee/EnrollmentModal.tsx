@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Users, User, Share2, Search, Trash2, CheckCircle, AlertCircle, Loader } from 'lucide-react';
+import PaymentLoader from '../../components/layout/Loader';
 import toast from 'react-hot-toast';
 
 import { userService, bookingService } from '../../services/api';
@@ -15,8 +16,8 @@ interface EnrollmentModalProps {
 }
 
 const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupCode }: EnrollmentModalProps) => {
-    // Default to first ticket type if available
-    const defaultTicket = ticketTypes.length > 0 ? ticketTypes[0].ticketTypeId : '';
+    const validTickets = ticketTypes?.filter(t => (t.price ?? 0) > 0) || [];
+    const defaultTicket = validTickets.length ? (validTickets[0].ticketTypeId || validTickets[0].id) : null;
 
     const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
         defaultValues: {
@@ -39,6 +40,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
     const [showSeatModal, setShowSeatModal] = useState(false);
     const [bookedSeats, setBookedSeats] = useState<number[]>([]);
     const [selectedSeat, setSelectedSeat] = useState<number | null>(null);
+    const [couponCode, setCouponCode] = useState("")
 
     // Profile & Group States
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -50,15 +52,10 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
     // Bill & Promo States
     const [showBillSummary, setShowBillSummary] = useState(false);
-    const [promoCode, setPromoCode] = useState('');
-    const [discount, setDiscount] = useState(0);
-    const [discountApplied, setDiscountApplied] = useState(false);
-    const [finalAmount, setFinalAmount] = useState(0);
-
     // Payment States
     const [showPayment, setShowPayment] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'UPI' | 'RAZORPAY' | null>(null);
-
+    const [paymentLoading, setPaymentLoading] = useState(false);
     // We need to store valid data to use after payment
     const [pendingFormData, setPendingFormData] = useState<any>(null);
 
@@ -136,9 +133,13 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
     const onSubmit = async (data: any) => {
         // 1. Validate Ticket
-        if (ticketTypes.length > 0 && !data.ticketTierId) {
+        if (validTickets.length > 0 && !data.ticketTierId) {
             toast.error("Please select a ticket type");
             return;
+        }
+
+        if (validTickets.length === 0) {
+            data.ticketTierId = null;
         }
 
         // 2. Validate Seat (Should be selected by now, but double check)
@@ -149,48 +150,13 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
         // 3. Check Payment
         // Ensure ticketType comparison is safe (case insensitive if needed)
-        const isPaid = event.ticketType === 'PAID';
-
-        if (isPaid && !showBillSummary && !showPayment) {
+        if (!showBillSummary && !showPayment) {
             setPendingFormData(data);
-
-            // Calculate initial amount
-            const ticket = ticketTypes.find(t => t.ticketTypeId.toString() === data.ticketTierId.toString());
-            const basePrice = ticket ? ticket.price : (event.ticketPrice || 0);
-            setFinalAmount(basePrice);
-
             setShowBillSummary(true);
             return;
         }
 
-        // If free or bill summary accepted
         await processEnrollment(data);
-    };
-
-    const handleApplyPromo = () => {
-        // Calculate base price first to ensure we can reset correctly
-        const ticket = ticketTypes.find(t => t.ticketTypeId.toString() === pendingFormData.ticketTierId.toString());
-        const basePrice = ticket ? ticket.price : (event.ticketPrice || 0);
-
-        if (!event.allowCoupon) {
-            toast.error("Promo codes are not applicable for this event.");
-            return;
-        }
-
-        const validCode = event.couponCode || '';
-        if (promoCode && validCode && promoCode.trim().toUpperCase() === validCode.toUpperCase()) {
-            const percentage = event.discountPercentage || 0;
-            const disc = basePrice * (percentage / 100);
-            setDiscount(disc);
-            setFinalAmount(basePrice - disc);
-            setDiscountApplied(true);
-            toast.success(`Promo code applied! ${percentage}% Discount`);
-        } else {
-            toast.error("Invalid promo code");
-            setDiscount(0);
-            setFinalAmount(basePrice); // Reset to base price
-            setDiscountApplied(false);
-        }
     };
 
     const handleProceedToPayment = () => {
@@ -202,12 +168,17 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
         try {
             const payload = {
                 eventId: event.eventId,
-                ticketTypeId: parseInt(data.ticketTierId) || null,
-                ...data,
-                bookingType: bookingType,
-                attendeeAge: parseInt(data.attendeeAge) || 18,
+                ticketTypeId: data.ticketTierId ? Number(data.ticketTierId) : undefined,
+                bookingType,
+                attendeeAge: data.attendeeAge ? Number(data.attendeeAge) : 18,
                 seatNumber: selectedSeat,
-                invitedUsers: invitedMembers.map(m => m.email)
+                invitedUsers: invitedMembers.map(m => m.email),
+                couponCode,
+                attendeeName: data.attendeeName,
+                contactNumber: data.contactNumber,
+                dietaryRestrictions: data.dietaryRestrictions,
+                companyName: data.companyName,
+                jobTitle: data.jobTitle
             };
 
             console.log("Submitting enrollment payload:", payload);
@@ -292,7 +263,10 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
     // Bill Summary UI
     if (showBillSummary) {
-        const ticket = ticketTypes.find(t => t.ticketTypeId.toString() === pendingFormData.ticketTierId.toString());
+        const ticket = validTickets.find(
+            t => String(t.ticketTypeId || t.id) === String(pendingFormData?.ticketTierId)
+        );
+
         const basePrice = ticket ? ticket.price : (event.ticketPrice || 0);
 
         return (
@@ -310,16 +284,9 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                             <span>₹{basePrice.toFixed(2)}</span>
                         </div>
 
-                        {discountApplied && (
-                            <div className="flex justify-between text-green-400 font-medium">
-                                <span>Discount ({promoCode})</span>
-                                <span>- ₹{discount.toFixed(2)}</span>
-                            </div>
-                        )}
-
                         <div className="border-t border-white/10 pt-2 mt-2 flex justify-between font-bold text-lg text-white">
                             <span>Total Payable</span>
-                            <span>₹{finalAmount.toFixed(2)}</span>
+                            <span>₹{basePrice.toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -328,17 +295,12 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                         <div className="flex gap-2">
                             <input
                                 type="text"
-                                value={promoCode}
-                                onChange={(e) => setPromoCode(e.target.value)}
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value)}
                                 placeholder="Enter Coupon Code"
                                 className="flex-1 glass-input uppercase"
+                                disabled={!event.allowCoupon}
                             />
-                            <button
-                                onClick={handleApplyPromo}
-                                className="px-4 py-2 bg-white/10 text-white font-medium rounded-xl hover:bg-white/20 transition-colors border border-white/10"
-                            >
-                                Apply
-                            </button>
                         </div>
                     </div>
 
@@ -364,12 +326,12 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
     if (showPayment) {
         return (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                <div className="glass-card w-full max-w-lg p-6 relative animate-fadeIn text-white">
-                    <button onClick={() => setShowPayment(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+                <div className={`w-full max-w-md p-6 relative animate-fadeIn text-white ${paymentLoading ? '-translate-y-40' : 'glass-card'}`}>
+                    <button onClick={() => setShowPayment(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-[999]">
                         <X size={24} />
                     </button>
 
-                    <h2 className="text-2xl font-bold text-white mb-6 text-glow">Payment Method</h2>
+                    {!paymentLoading && <h2 className="text-2xl font-bold text-white mb-6 text-glow">Payment Method</h2>}
 
                     {!paymentMethod ? (
                         <div className="space-y-4">
@@ -411,11 +373,11 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            <button onClick={() => setPaymentMethod(null)} className="text-sm text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
+                            {!paymentLoading && <button onClick={() => setPaymentMethod(null)} className="text-sm text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
                                 ← Back to methods
-                            </button>
+                            </button>}
 
-                            {paymentMethod === 'CARD' && (
+                            {paymentMethod === 'CARD' && !paymentLoading && (
                                 <div className="space-y-4">
                                     <input type="text" placeholder="Card Number" className="w-full glass-input" />
                                     <div className="grid grid-cols-2 gap-4">
@@ -424,18 +386,21 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                                     </div>
                                     <input type="text" placeholder="Cardholder Name" className="w-full glass-input" />
                                     <button
-                                        onClick={() => {
+                                        disabled={paymentLoading}
+                                        onClick={async () => {
                                             console.log("Payment confirmed (Card), calling processEnrollment");
-                                            processEnrollment(pendingFormData);
+                                            setPaymentLoading(true);
+                                            await processEnrollment(pendingFormData);
+                                            setPaymentLoading(false);
                                         }}
-                                        className="w-full btn-glow text-white shadow-lg"
+                                        className="w-full btn-glow text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Pay & Enroll
                                     </button>
                                 </div>
                             )}
 
-                            {(paymentMethod === 'UPI' || paymentMethod === 'RAZORPAY') && (
+                            {(paymentMethod === 'UPI' || paymentMethod === 'RAZORPAY') && !paymentLoading && (
                                 <div className="text-center space-y-6">
                                     <div className="w-48 h-48 bg-white p-4 mx-auto rounded-xl flex items-center justify-center border border-white/10">
                                         <div className="text-center">
@@ -447,14 +412,23 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                                     </div>
                                     <p className="text-slate-300">Scan this QR code with your {paymentMethod} app to pay</p>
                                     <button
-                                        onClick={() => {
+                                        disabled={paymentLoading}
+                                        onClick={async () => {
                                             console.log("Payment confirmed (UPI/Razorpay), calling processEnrollment");
-                                            processEnrollment(pendingFormData);
+                                            setPaymentLoading(true);
+                                            await processEnrollment(pendingFormData);
+                                            setPaymentLoading(false);
                                         }}
-                                        className="w-full py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20"
+                                        className="w-full py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         I have made the payment
                                     </button>
+                                </div>
+                            )}
+
+                            {paymentLoading && (
+                                <div className="fixed inset-0 bg-black/70 backdrop-blur flex items-center justify-center z-[999] h-96">
+                                    <PaymentLoader />
                                 </div>
                             )}
                         </div>
@@ -541,16 +515,16 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                     )}
 
                     {/* Ticket Type Selection */}
-                    {ticketTypes && ticketTypes.length > 0 && (
+                    {validTickets.length > 0 && (
                         <div>
                             <label className="block text-sm font-medium text-slate-300 mb-2">Select Ticket</label>
                             <div className="grid grid-cols-1 gap-3">
-                                {ticketTypes.map((t: any) => (
+                                {validTickets.map((t) => (
                                     <label key={t.ticketTypeId || t.id} className="relative flex items-center p-3 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
                                         <input
                                             type="radio"
                                             value={t.ticketTypeId || t.id}
-                                            {...register("ticketTierId", { required: "Please select a ticket" })}
+                                            {...register("ticketTierId", validTickets.length > 0 ? { required: "Please select a ticket" } : {})}
                                             className="h-4 w-4 text-purple-500 focus:ring-purple-500 border-white/20 bg-white/10"
                                         />
                                         <div className="ml-3 flex flex-1 justify-between items-center">
@@ -559,7 +533,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                                                 {t.description && <span className="block text-xs text-slate-400">{t.description}</span>}
                                             </div>
                                             <span className="block text-sm font-bold text-blue-300">
-                                                {t.price === 0 ? 'Free' : `$${t.price}`}
+                                                ₹{t.price.toLocaleString()}
                                             </span>
                                         </div>
                                     </label>
@@ -608,8 +582,8 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
                                 <div className="grid grid-cols-2 gap-4 pt-2">
                                     <div>
-                                        <label className="block text-xs font-medium text-slate-400 mb-1">Age</label>
-                                        <input type="number" {...register("attendeeAge", { required: "Age is required", min: 18 })} className="w-full glass-input" placeholder="Age" />
+                                        <label className="block text-xs font-medium text-slate-400 mb-1">Age (Optional)</label>
+                                        <input type="number" {...register("attendeeAge")} className="w-full glass-input" placeholder="Age (Optional)" />
                                     </div>
                                     <div>
                                         <label className="block text-xs font-medium text-slate-400 mb-1">Dietary (Optional)</label>
@@ -719,7 +693,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                             <div className="grid grid-cols-2 gap-4 pt-2">
                                 <div>
                                     <label className="block text-xs font-medium text-gray-500 mb-1">Your Age</label>
-                                    <input type="number" {...register("attendeeAge", { required: "Age is required", min: 18 })} className="w-full px-3 py-1.5 text-sm border rounded-lg glass-input" placeholder="Age" />
+                                    <input type="number" {...register("attendeeAge")} className="w-full px-3 py-1.5 text-sm border rounded-lg glass-input" placeholder="Age" />
                                 </div>
                             </div>
 
@@ -747,9 +721,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                         disabled={isSubmitting}
                         className="w-full btn-glow text-white shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        {isSubmitting ? 'Processing...' : (
-                            (event.ticketType === 'PAID' ? 'Proceed to Payment (Mock)' : 'Confirm Enrollment')
-                        )}
+                        {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
                     </button>
                 </form>
             </div>

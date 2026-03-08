@@ -34,9 +34,22 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findActiveEventsForAttendee();
 
     @Query("""
-SELECT DISTINCT e FROM Event e
-LEFT JOIN FETCH e.ticketTiers
-WHERE e.organizerId = :organizerId
-""")
-List<Event> findByOrganizerIdWithTicketTiers(Long organizerId);
+            SELECT DISTINCT e FROM Event e
+            LEFT JOIN FETCH e.ticketTiers
+            WHERE e.organizerId = :organizerId
+            """)
+    List<Event> findByOrganizerIdWithTicketTiers(Long organizerId);
+
+    // ADD THIS METHOD
+    Long countByStatus(Event.EventStatus status);
+
+    @Query("""
+        SELECT 
+        SUM(CASE WHEN e.status='ACTIVE' THEN 1 ELSE 0 END),
+        SUM(CASE WHEN e.status='COMPLETED' THEN 1 ELSE 0 END)
+        FROM Event e
+        WHERE e.deletedAt IS NULL
+        """)
+    List<Object[]> getEventStatusCounts();
+
 }

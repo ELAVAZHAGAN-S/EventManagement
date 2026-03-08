@@ -106,15 +106,21 @@ public class EventService {
         }
 
         // Process Ticket Tiers
-        if (request.getTicketTiers() != null) {
+        // Process Ticket Tiers
+        if (request.getTicketTiers() != null && !request.getTicketTiers().isEmpty()) {
+
             request.getTicketTiers().forEach(tierDto -> {
+
                 TicketTier tier = new TicketTier();
                 tier.setName(tierDto.getName());
                 tier.setPrice(tierDto.getPrice());
                 tier.setCapacity(tierDto.getCapacity());
                 tier.setDescription(tierDto.getDescription());
+
                 event.addTicketTier(tier);
+
             });
+
         }
 
         // Set status, default to PLANNED if null or explicitly PLANNED
@@ -216,16 +222,23 @@ public class EventService {
         }
 
         // Clear existing and add new tiers
-        if (request.getTicketTiers() != null) {
+        // Clear existing and add new tiers
+        if (request.getTicketTiers() != null && !request.getTicketTiers().isEmpty()) {
+
             event.getTicketTiers().clear();
+
             request.getTicketTiers().forEach(tierDto -> {
+
                 TicketTier tier = new TicketTier();
                 tier.setName(tierDto.getName());
                 tier.setPrice(tierDto.getPrice());
                 tier.setCapacity(tierDto.getCapacity());
                 tier.setDescription(tierDto.getDescription());
+
                 event.addTicketTier(tier);
+
             });
+
         }
 
         if (request.getStatus() != null) {

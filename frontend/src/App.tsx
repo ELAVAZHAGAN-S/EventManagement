@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
 import ForgotPassword from './pages/ForgotPassword';
 import VerifyOTP from './pages/VerifyOTP';
 import ResetPassword from './pages/ResetPassword';
@@ -11,6 +10,7 @@ import EventDetails from './pages/EventDetails';
 import MyBookings from './pages/MyBookings';
 import { Toaster } from 'react-hot-toast';
 import AiSidebar from './components/AiSidebar';
+import UserProfile from './components/user/ProfileSettings';
 
 // Org Imports
 import OrgLayout from './layouts/OrgLayout';
@@ -20,7 +20,6 @@ import CreateEditEvent from './pages/org/CreateEditEvent';
 import OrgEventDetails from './pages/org/OrgEventDetails';
 import OrgVenues from './pages/org/OrgVenues';
 import CreateEditVenue from './pages/org/CreateEditVenue';
-import OrgProfile from './pages/org/OrgProfile';
 import OrgCoupons from './pages/org/OrgCoupons';
 import EventCoupons from './pages/org/EventCoupons';
 
@@ -28,6 +27,8 @@ import EventCoupons from './pages/org/EventCoupons';
 import AdminLayout from './components/layout/AdminLayout';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminEventList from './pages/admin/AdminEventList';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
 
 const App = () => {
   return (
@@ -48,8 +49,8 @@ const App = () => {
           <Route path="/events" element={<AttendeeHome />} />
           <Route path="/events/:id" element={<EventDetails />} />
           <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Dashboard />} />
+          <Route path="/dashboard" element={<AttendeeHome />} />
+          <Route path="/profile" element={<UserProfile />} />
           <Route path="/home" element={<AttendeeHome />} />
         </Route>
 
@@ -65,7 +66,7 @@ const App = () => {
             <Route path="venues" element={<OrgVenues />} />
             <Route path="venues/new" element={<CreateEditVenue />} />
             <Route path="venues/edit/:id" element={<CreateEditVenue />} />
-            <Route path="profile" element={<OrgProfile />} />
+            <Route path="profile" element={<UserProfile />} />
             <Route path="coupons" element={<OrgCoupons />} />
             <Route path="coupons/:eventId" element={<EventCoupons />} />
           </Route>
@@ -76,8 +77,8 @@ const App = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="events" element={<AdminEventList />} />
-            <Route path="users" element={<div className="p-8 text-center text-slate-400">User Management Coming Soon</div>} />
-            <Route path="analytics" element={<div className="p-8 text-center text-slate-400">Analytics Coming Soon</div>} />
+            <Route path="users" element={<AdminUsers/>}/>
+            <Route path="analytics" element={<AdminAnalytics/>}/>
           </Route>
         </Route>
       </Routes>

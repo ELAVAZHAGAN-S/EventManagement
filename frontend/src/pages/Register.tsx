@@ -174,50 +174,71 @@ const Register = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+const handleSubmit = async (e: React.FormEvent) => {
+e.preventDefault()
 
-    if (!validateForm()) {
-      toast.error("Please fix the errors above");
-      return;
-    }
+if (!validateForm()) {
+toast.error("Please fix the errors above")
+return
+}
 
-    const payload = {
-      fullName,
-      email,
-      password,
-      phoneNumber: phoneNumber || undefined,
-      role
-    };
+const payload = {
+fullName,
+email,
+password,
+phoneNumber: phoneNumber || undefined,
+role
+}
 
-    try {
-      setLoading(true);
-      await authService.register(payload);
-      toast.success("Account Created Successfully! 🚀");
-      setTimeout(() => navigate('/dashboard'), 2000);
-    } catch (error: any) {
-      console.error("Registration failed", error);
+try {
+setLoading(true)
 
-      // Handle backend validation errors
-      if (error.response?.data?.details) {
-        const backendErrors = error.response.data.details;
-        const fieldErrors: FieldErrors = {};
+await authService.register(payload)
 
-        Object.keys(backendErrors).forEach((field) => {
-          fieldErrors[field as keyof FieldErrors] = backendErrors[field];
-        });
+const loginRes = await authService.login({
+email,
+password
+})
 
-        setErrors({ ...errors, ...fieldErrors });
-        setTouched({ fullName: true, email: true, password: true, confirmPassword: true, phoneNumber: true });
-        toast.error(error.response.data.message || "Validation failed");
-      } else {
-        const errorMessage = error.response?.data?.message || error.message || "Registration failed. Please try again.";
-        toast.error(errorMessage);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
+localStorage.setItem("token", loginRes.token)
+
+toast.success("Account Created Successfully! 🚀")
+
+navigate("/dashboard")
+
+} catch (error: any) {
+
+console.error("Registration failed", error)
+
+if (error.response?.data?.details) {
+
+const backendErrors = error.response.data.details
+const fieldErrors: FieldErrors = {}
+
+Object.keys(backendErrors).forEach((field) => {
+fieldErrors[field as keyof FieldErrors] = backendErrors[field]
+})
+
+setErrors({ ...errors, ...fieldErrors })
+setTouched({ fullName: true, email: true, password: true, confirmPassword: true, phoneNumber: true })
+
+toast.error(error.response.data.message || "Validation failed")
+
+} else {
+
+const errorMessage =
+error.response?.data?.message ||
+error.message ||
+"Registration failed. Please try again."
+
+toast.error(errorMessage)
+
+}
+
+} finally {
+setLoading(false)
+}
+}
 
   const FieldError = ({ error }: { error?: string }) => {
     if (!error) return null;

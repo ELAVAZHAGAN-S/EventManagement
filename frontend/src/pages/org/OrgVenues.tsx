@@ -139,7 +139,7 @@ const OrgVenues = () => {
                 <h1 className="text-2xl font-bold text-slate-100">Venue Management</h1>
                 <Link
                     to="/org/venues/new"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
                 >
                     <Plus size={20} />
                     Add Venue

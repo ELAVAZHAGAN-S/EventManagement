@@ -366,7 +366,11 @@ export const adminService = {
   deleteUser: async (userId: number) => {
     const response = await api.delete(`/admin/users/${userId}`);
     return response.data;
-  }
+  },
+  getTopEvents: async () => {
+    const response = await api.get('/admin/analytics/top-events')
+    return response.data
+  },
 };
 
 export default api;
