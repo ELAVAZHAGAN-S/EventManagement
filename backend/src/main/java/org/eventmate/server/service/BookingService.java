@@ -10,6 +10,8 @@ import org.eventmate.server.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -19,6 +21,7 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final EventRepository eventRepository;
+    private final CouponCodeRepository couponCodeRepository;
     @SuppressWarnings("unused")
     private final TicketTypeRepository ticketTypeRepository; // Kept for legacy, but we use logic for check
     private final UserRepository userRepository;
@@ -37,6 +40,26 @@ public class BookingService {
         Event event = eventRepository.findById(request.getEventId())
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
 
+        CouponCode coupon = null;
+
+        if (request.getCouponCode() != null && !request.getCouponCode().isEmpty()) {
+
+            if (!event.getAllowCoupon()) {
+                throw new ValidationException("Coupons are not allowed for this event");
+            }
+
+            coupon = couponCodeRepository
+                    .findByCode(request.getCouponCode())
+                    .orElseThrow(() -> new ValidationException("Invalid coupon code"));
+
+            if (coupon.getIsUsed()) {
+                throw new ValidationException("Coupon already used");
+            }
+
+            if (!request.getEventId().equals(coupon.getEventId())) {
+                throw new ValidationException("Coupon not valid for this event");
+            }
+        }
         // ONSITE Seat Validation
         if (event.getEventFormat() == Event.EventFormat.ONSITE) {
             if (request.getSeatNumber() == null) {
@@ -96,6 +119,12 @@ public class BookingService {
         // 7. Save
         log.info("Duplicate check passed. Creating booking for User: {} Event: {}", userId, request.getEventId());
         Booking savedBooking = bookingRepository.save(booking);
+        if (coupon != null) {
+            coupon.setIsUsed(true);
+            coupon.setUsedBy(userId);
+            coupon.setUsedAt(LocalDateTime.now());
+            couponCodeRepository.save(coupon);
+        }
         log.info("User {} enrolled in event {}. Ticket: {}", userId, request.getEventId(), ticketCode);
 
         // 8. Handle Invited Users (Group Booking)

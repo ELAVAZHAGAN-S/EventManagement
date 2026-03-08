@@ -32,6 +32,9 @@ public class BookingRequest {
     // Actually, ticketTypeId usually refers to TicketType (Free/Paid), but we added
     // TicketTier entity.
     // We should probably rely on `ticketTierId` for Paid events.
+
+    private String couponCode;
+
     private Long ticketTierId; // Optional, for Paid events with tiers
 
     private Integer seatNumber; // For ONSITE events

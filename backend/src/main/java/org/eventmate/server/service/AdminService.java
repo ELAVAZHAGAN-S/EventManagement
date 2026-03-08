@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import org.hibernate.Hibernate;
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +26,40 @@ public class AdminService {
     private final BookingRepository bookingRepository;
     private final TransactionRepository transactionRepository;
 
+    public List<Object[]> getTopEvents() {
+        List<Object[]> events = bookingRepository.findTopEvents();
+        return events.size() > 5 ? events.subList(0, 5) : events;
+    }
+
     public AnalyticsResponse getAnalytics() {
+
         Long totalEvents = eventRepository.count();
         Long totalUsers = userRepository.countByRole(Role.USER);
         Long totalOrgs = userRepository.countByRole(Role.ORGANIZATION);
         Long totalBookings = bookingRepository.count();
+
         BigDecimal totalRevenue = transactionRepository.getTotalRevenue();
-        Long activeEvents = (long) eventRepository.findByStatus(Event.EventStatus.ACTIVE).size();
-        Long completedEvents = (long) eventRepository.findByStatus(Event.EventStatus.COMPLETED).size();
+
+        List<Object[]> eventCounts = eventRepository.getEventStatusCounts();
+
+        Long activeEvents = 0L;
+        Long completedEvents = 0L;
+
+        if (!eventCounts.isEmpty()) {
+            Object[] row = eventCounts.get(0);
+
+            activeEvents = row[0] != null ? ((Number) row[0]).longValue() : 0L;
+            completedEvents = row[1] != null ? ((Number) row[1]).longValue() : 0L;
+        }
 
         return new AnalyticsResponse(
-                totalEvents, totalUsers, totalOrgs, totalBookings,
+                totalEvents,
+                totalUsers,
+                totalOrgs,
+                totalBookings,
                 totalRevenue != null ? totalRevenue : BigDecimal.ZERO,
-                activeEvents, completedEvents);
+                activeEvents,
+                completedEvents);
     }
 
     public List<Transaction> getAllTransactions() {
@@ -54,16 +76,33 @@ public class AdminService {
 
     @Transactional
     public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalStateException("Admin users cannot be deleted");
+        }
+
+        userRepository.delete(user);
+
         log.info("Admin deleted user {}", userId);
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void toggleUserStatus(Long userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (user.getRole() == Role.ADMIN) {
+            throw new IllegalStateException("Admin status cannot be modified");
+        }
+
         user.setIsActive(!user.getIsActive());
+
         userRepository.save(user);
+
         log.info("Admin toggled user {} status to {}", userId, user.getIsActive());
     }
 
@@ -72,16 +111,28 @@ public class AdminService {
     /**
      * Get all events with optional status filter (excludes soft-deleted)
      */
+    @Transactional(readOnly = true)
     public List<Event> getAllEventsForAdmin(String status) {
+
+        List<Event> events;
+
         if (status != null && !status.isEmpty()) {
             try {
                 Event.EventStatus eventStatus = Event.EventStatus.valueOf(status);
-                return eventRepository.findByStatusAndDeletedAtIsNullOrderByCreatedAtDesc(eventStatus);
+                events = eventRepository.findByStatusAndDeletedAtIsNullOrderByCreatedAtDesc(eventStatus);
             } catch (IllegalArgumentException e) {
-                // Invalid status, return all
+                events = eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
             }
+        } else {
+            events = eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
         }
-        return eventRepository.findByDeletedAtIsNullOrderByCreatedAtDesc();
+
+        events.forEach(event -> {
+            Hibernate.initialize(event.getTicketTiers());
+            Hibernate.initialize(event.getGuests());
+        });
+
+        return events;
     }
 
     /**
@@ -89,12 +140,20 @@ public class AdminService {
      */
     @Transactional
     public Event toggleFeatured(Long eventId) {
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
 
         event.setIsFeatured(!Boolean.TRUE.equals(event.getIsFeatured()));
-        log.info("Admin toggled featured status for event {} to {}", eventId, event.getIsFeatured());
-        return eventRepository.save(event);
+
+        Event saved = eventRepository.save(event);
+
+        Hibernate.initialize(saved.getTicketTiers());
+        Hibernate.initialize(saved.getGuests());
+
+        log.info("Admin toggled featured status for event {} to {}", eventId, saved.getIsFeatured());
+
+        return saved;
     }
 
     /**

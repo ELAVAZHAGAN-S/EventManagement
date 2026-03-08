@@ -123,14 +123,6 @@ const AdminDashboard = () => {
                         <p className="text-slate-200 font-medium mt-2">Analytics</p>
                         <p className="text-slate-500 text-sm">View detailed reports</p>
                     </Link>
-                    <Link
-                        to="/admin/settings"
-                        className="glass-card p-4 text-center hover:border-violet-500/50 transition-all group"
-                    >
-                        <HiStar className="w-8 h-8 mx-auto text-amber-400 group-hover:scale-110 transition-transform" />
-                        <p className="text-slate-200 font-medium mt-2">Settings</p>
-                        <p className="text-slate-500 text-sm">Platform configuration</p>
-                    </Link>
                 </div>
             </div>
         </div>

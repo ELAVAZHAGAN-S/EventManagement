@@ -35,12 +35,9 @@ const EventDetails = () => {
                 // For now, assuming backend returns consolidated 'tickets' or frontend adapts.
                 // If using new 'ticketTiers', we might need to fetch them if not in eventData.
                 let ticketData: any[] = [];
+
                 if (eventData.ticketTiers && eventData.ticketTiers.length > 0) {
                     ticketData = eventData.ticketTiers;
-                } else {
-                    try {
-                        ticketData = await eventService.getTicketTypes(Number(id));
-                    } catch (e) { /* ignore */ }
                 }
 
                 setEvent(eventData);
@@ -274,13 +271,9 @@ const EventDetails = () => {
                                 return (
                                     <div className="text-center">
                                         <p className="text-slate-400 font-medium mb-1">Registration</p>
-                                        {event.ticketType === 'FREE' ? (
-                                            <h2 className="text-3xl font-bold text-green-400 mb-4">Free Entry</h2>
-                                        ) : (
-                                            <h2 className="text-3xl font-bold text-gradient mb-4">
-                                                ₹{event.ticketPrice || (tickets.length > 0 ? Math.min(...tickets.map((t: any) => t.price || 0)) : '0')}
-                                            </h2>
-                                        )}
+                                        <h2 className="text-3xl font-bold text-gradient">
+                                            ₹{event.ticketPrice || (tickets.length > 0 ? Math.min(...tickets.map((t: any) => t.price || 0)) : '0')}
+                                        </h2>
                                         <div className="w-full py-4 text-lg bg-yellow-500/20 border border-yellow-500/40 rounded-xl flex items-center justify-center gap-2 text-yellow-400 font-bold">
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -312,13 +305,9 @@ const EventDetails = () => {
                                 <>
                                     <div className="text-center mb-6">
                                         <p className="text-slate-400 font-medium mb-1">Registration</p>
-                                        {event.ticketType === 'FREE' ? (
-                                            <h2 className="text-3xl font-bold text-green-400">Free Entry</h2>
-                                        ) : (
-                                            <h2 className="text-3xl font-bold text-gradient">
-                                                ₹{event.ticketPrice || (tickets.length > 0 ? Math.min(...tickets.map((t: any) => t.price || 0)) : '0')}
-                                            </h2>
-                                        )}
+                                        <h2 className="text-3xl font-bold text-gradient">
+                                            ₹{event.ticketPrice || (tickets.length > 0 ? Math.min(...tickets.map((t: any) => t.price || 0)) : '0')}
+                                        </h2>
                                     </div>
 
                                     {groupCodeParam && (

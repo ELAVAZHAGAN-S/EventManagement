@@ -149,21 +149,21 @@ const AdminEventList = () => {
             <div className="glass-card overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                        <thead className="bg-white/5 border-b border-white/10">
+                        <thead className="bg-white/5 text-center border-b border-white/10">
                             <tr>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Event</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Date</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Featured</th>
-                                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Event</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Type</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Date</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Featured</th>
+                                <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/5">
                             {filteredEvents.map((event) => (
                                 <tr key={event.eventId} className="hover:bg-white/5 transition-colors">
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex items-center justify-center gap-3">
                                             <img
                                                 src={getImageUrl(event.bannerImageId)}
                                                 alt={event.title}
@@ -175,24 +175,24 @@ const AdminEventList = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 text-center py-4">
                                         <span className="text-sm text-slate-300">
                                             {event.eventType?.replace('_', ' ') || 'N/A'}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 text-center py-4">
                                         <span className="text-sm text-slate-400">
                                             {new Date(event.startDate).toLocaleDateString('en-US', {
                                                 month: 'short', day: 'numeric', year: 'numeric'
                                             })}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 text-center py-4">
                                         <span className={`px-2 py-1 text-xs font-semibold rounded-lg border ${getStatusBadge(event.status)}`}>
                                             {event.status}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td className="px-6 text-center py-4">
                                         <button
                                             onClick={() => handleToggleFeatured(event.eventId)}
                                             className={`p-2 rounded-lg transition-all ${event.isFeatured
@@ -205,14 +205,7 @@ const AdminEventList = () => {
                                         </button>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Link
-                                                to={`/events/${event.eventId}`}
-                                                className="p-2 rounded-lg bg-white/5 text-slate-400 hover:text-violet-400 transition-colors"
-                                                title="View Event"
-                                            >
-                                                <HiEye className="w-5 h-5" />
-                                            </Link>
+                                        <div className="flex items-center justify-center gap-2">
                                             <button
                                                 onClick={() => setDeleteModal({
                                                     open: true,

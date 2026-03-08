@@ -91,7 +91,7 @@
             justify-content: center;
             padding: 24px;
             text-align: center;
-      		border-radius: 0 16px 16px 0;
+            border-radius: 0 16px 16px 0;
         }
 
         .event-header {
@@ -317,48 +317,115 @@
                     <p>Hi <span th:text="${userName}">User</span>! 🎉</p>
                     <p>Congratulations! Your ticket has been confirmed. Here are your booking details:</p>
 
-                    <div class="ticket">
+                    <table width="100%" cellpadding="0" cellspacing="0"
+                        style="border:1px solid #e5e7eb;border-radius:16px;margin-top:26px;">
+                        <tr>
 
-                        <div class="ticket-left">
-                            <div class="event-header">
-                                <div class="event-name" th:text="${eventName}">Tech Summit</div>
-                                <div class="badge">CONFIRMED</div>
-                            </div>
+                            <td width="70%" style="padding:30px;">
 
-                            <div class="ticket-info">
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+                                    <div style="font-size:20px;font-weight:700;color:#111827;" th:text="${eventName}">
+                                        Tech Summit
+                                    </div>
 
-                                <div>
-                                    <div class="label">Date</div>
-                                    <div class="value" th:text="${eventDate}">Jan 01, 2026</div>
+                                    <div
+                                        style="font-size:11px;padding:6px 12px;border-radius:20px;background:#111827;color:#fff;font-weight:600;">
+                                        CONFIRMED
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <div class="label">Venue</div>
-                                    <div class="value" th:text="${venue}">Main Hall</div>
+                                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
+                                    <tr>
+
+                                        <td style="padding-right:20px;">
+                                            <div style="font-size:11px;color:#9ca3af;">DATE</div>
+                                            <div style="font-size:15px;font-weight:600;color:#111827;"
+                                                th:text="${eventDate}">
+                                                Jan 01 2026
+                                            </div>
+                                        </td>
+
+                                        <td style="padding-right:20px;">
+                                            <div style="font-size:11px;color:#9ca3af;">VENUE</div>
+                                            <div style="font-size:15px;font-weight:600;color:#111827;"
+                                                th:text="${venue}">
+                                                Main Hall
+                                            </div>
+                                        </td>
+
+                                        <td>
+                                            <div style="font-size:11px;color:#9ca3af;">TICKET ID</div>
+                                            <div style="font-size:15px;font-weight:600;color:#111827;font-family:monospace;"
+                                                th:text="${ticketCode}">
+                                                EVT-12345
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                </table>
+
+                            </td>
+
+                            <td width="2%" style="position:relative;">
+                                <div style="
+border-left:2px dashed #e5e7eb;
+height:100%;
+position:absolute;
+left:50%;
+top:0;
+"></div>
+
+                                <div style="
+position:absolute;
+top:-12px;
+left:50%;
+transform:translateX(-50%);
+width:24px;
+height:24px;
+background:#ffffff;
+border-radius:50%;
+border-bottom:2px solid #e5e7eb;
+"></div>
+
+                                <div style="
+position:absolute;
+bottom:-12px;
+left:50%;
+transform:translateX(-50%);
+width:24px;
+height:24px;
+background:#ffffff;
+border-radius:50%;
+border-top:2px solid #e5e7eb;
+"></div>
+                            </td>
+
+
+                            <td width="28%"
+                                style="background:#fafafa;padding:24px;text-align:center;border-radius:0 16px 16px 0;">
+
+                                <div style="font-size:12px;letter-spacing:2px;color:#9ca3af;">
+                                    ENTRY PASS
                                 </div>
 
-                                <div>
-                                    <div class="label">Ticket ID</div>
-                                    <div class="value mono" th:text="${ticketCode}">EVT-12345</div>
+                                <div style="font-size:18px;font-weight:700;margin-top:8px;color:#111827;font-family:monospace;"
+                                    th:text="${ticketCode}">
+                                    EVT-12345
                                 </div>
 
-                            </div>
-                        </div>
+                                <div
+                                    style="margin:20px auto;height:70px;width:130px;background:repeating-linear-gradient(90deg,#111 0,#111 2px,transparent 2px,transparent 4px);">
+                                </div>
 
-                        <div class="divider">
-                            <span class="circle top"></span>
-                            <span class="line"></span>
-                            <span class="circle bottom"></span>
-                        </div>
+                                <div style="font-size:12px;color:#6b7280;">
+                                    Show at entrance
+                                </div>
 
-                        <div class="ticket-right">
-                            <div class="entry">ENTRY PASS</div>
-                            <div class="ticket-code" th:text="${ticketCode}">EVT-12345</div>
-                            <div class="barcode"></div>
-                            <div class="scan">Show at entrance</div>
-                        </div>
+                            </td>
 
-                    </div>
+                        </tr>
+                    </table>
 
                     <div th:if="${groupCode != null}" class="group">
                         <h3>🎊 Group Invite</h3>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { CommonTextField } from './EventFormComponents';
 
 export const WebinarFields = () => (

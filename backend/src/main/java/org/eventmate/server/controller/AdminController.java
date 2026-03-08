@@ -22,6 +22,11 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @GetMapping("/analytics/top-events")
+    public ResponseEntity<List<Object[]>> getTopEvents() {
+        return ResponseEntity.ok(adminService.getTopEvents());
+    }
+
     @GetMapping("/analytics")
     public ResponseEntity<AnalyticsResponse> getAnalytics() {
         return ResponseEntity.ok(adminService.getAnalytics());

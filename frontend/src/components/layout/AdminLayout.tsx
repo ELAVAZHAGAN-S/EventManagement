@@ -37,7 +37,7 @@ const AdminLayout = () => {
                     glass fixed left-0 top-0 h-full z-50 
                     flex flex-col border-r border-white/10
                     transition-all duration-300 ease-out
-                    ${isHovered ? 'w-64' : 'w-[72px]'}
+                    ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
                 `}
             >
                 {/* Logo */}
@@ -65,7 +65,7 @@ const AdminLayout = () => {
                                 `}
                             >
                                 <Icon className="nav-icon w-6 h-6 flex-shrink-0" />
-                                <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
+                                <span className={`nav-label text-amber-50 font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0 ml-3' : 'opacity-0 -translate-x-2 ml-0'}`}>
                                     {item.label}
                                 </span>
                             </NavLink>

@@ -20,4 +20,13 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT COUNT(b) FROM Booking b WHERE b.eventId = :eventId AND b.status = 'CONFIRMED'")
     Long countConfirmedBookings(Long eventId);
+
+    @Query("""
+        SELECT e.title, COUNT(b.bookingId)
+        FROM Booking b
+        JOIN Event e ON e.eventId = b.eventId
+        GROUP BY e.title
+        ORDER BY COUNT(b.bookingId) DESC
+        """)
+    List<Object[]> findTopEvents();
 }
