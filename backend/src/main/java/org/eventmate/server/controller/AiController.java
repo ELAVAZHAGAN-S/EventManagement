@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eventmate.server.ai.EventAgent;
 import org.eventmate.server.dto.ChatRequest;
 import org.eventmate.server.dto.ChatResponse;
+import org.eventmate.server.service.AiService;
 import org.eventmate.server.service.MetadataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AiController {
 
-    private final EventAgent eventAgent;
+    private final AiService aiService;
     private final MetadataService metadataService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -30,12 +30,18 @@ public class AiController {
         try {
             log.info("AI Chat request: {}", request.getMessage());
 
+            if (request.getMessage() != null && request.getMessage().length() > 400) {
+                return ResponseEntity.ok(ChatResponse.builder()
+                        .response("Message too long. Please keep it under 400 characters.")
+                        .isCommand(false)
+                        .build());
+            }
             // 1. Get cached metadata for context
-            String metadata = metadataService.readMetadata();
+            String metadata = metadataService.getCompressedMetadata();
 
             // 2. Call AI Agent
-            String aiResponse = eventAgent.chat(request.getMessage(), metadata);
-            log.info("AI Response: {}", aiResponse);
+            String aiResponse = aiService.chat(request.getMessage(), metadata, request.getRole());
+            log.debug("AI Response: {}", aiResponse);
 
             // 3. Parse response to detect commands
             ChatResponse response = parseAiResponse(aiResponse);

@@ -29,9 +29,13 @@ class AiService {
     /**
      * Send a message to the AI assistant
      */
-    async chat(message: string, chatId?: string): Promise<AiResponse> {
-        const response = await api.post('/ai/chat', { message, chatId });
-        return response.data;
+    async chat(message: string, role: string): Promise<AiResponse> {
+        const response = await api.post('/ai/chat', {
+            message,
+            role
+        })
+
+        return response.data
     }
 
     /**

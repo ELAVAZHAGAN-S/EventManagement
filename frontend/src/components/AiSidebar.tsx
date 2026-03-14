@@ -15,6 +15,17 @@ const AiSidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    useEffect(() => {
+        const saved = localStorage.getItem("ai-chat-sessions")
+        if (saved) {
+            setSessions(JSON.parse(saved))
+        }
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem("ai-chat-sessions", JSON.stringify(sessions))
+    }, [sessions])
+
     // Check if user is on public pages (login, register, forgot-password, etc.)
     const publicRoutes = ['/', '/login', '/register', '/forgot-password', '/verify-otp', '/reset-password'];
     const isPublicPage = publicRoutes.includes(location.pathname);
@@ -57,18 +68,23 @@ const AiSidebar = () => {
     // Execute AI navigation command
     const executeCommand = (target: string) => {
         const validRoutes = [
-            '/events', '/org/events', '/org/events/create', '/org/venues',
-            '/org/venues/create', '/bookings', '/profile', '/org/dashboard'
-        ];
+            '/events',
+            '/my-bookings',
+            '/org/events',
+            '/org/events/create',
+            '/org/venues',
+            '/org/venues/create',
+            '/org/coupons',
+            '/profile'
+        ]
 
-        // Check if it's a valid route or an event detail route
         if (validRoutes.includes(target) || target.startsWith('/event/')) {
-            setIsOpen(false);
-            navigate(target);
+            setIsOpen(false)
+            navigate(target)
         } else {
-            console.warn('AI tried to navigate to invalid route:', target);
+            console.warn('AI tried to navigate to invalid route:', target)
         }
-    };
+    }
 
     // Send message to AI
     const sendMessage = async () => {
@@ -102,12 +118,15 @@ const AiSidebar = () => {
                 : s
         ));
 
-        const messageToSend = inputMessage;
+        const messageToSend = inputMessage.trim().slice(0, 400)
+        if (isLoading) return
         setInputMessage('');
         setIsLoading(true);
 
         try {
-            const response = await aiService.chat(messageToSend);
+            const role = localStorage.getItem("role") || "USER"
+
+            const response = await aiService.chat(messageToSend, role);
 
             const assistantMessage: ChatMessage = {
                 id: `msg-${Date.now()}-ai`,
@@ -131,8 +150,39 @@ const AiSidebar = () => {
             ));
 
             // Execute command if needed
+            let target = response.target
+
+            if (!target && response.response) {
+
+                const text = response.response.toLowerCase()
+
+                if (text.includes("events")) target = "/events"
+
+                else if (text.includes("create event"))
+                    target = "/org/events/create"
+
+                else if (text.includes("venues"))
+                    target = "/org/venues"
+
+                else if (text.includes("coupon"))
+                    target = "/org/coupons"
+
+                else if (text.includes("booking"))
+                    target = "/my-bookings"
+
+                else if (text.includes("profile"))
+                    target = "/profile"
+
+            }
+
             if (response.isCommand && response.target) {
-                setTimeout(() => executeCommand(response.target!), 500);
+
+                setTimeout(() => executeCommand(response.target!), 500)
+
+            } else if (target) {
+
+                setTimeout(() => executeCommand(target), 500)
+
             }
 
         } catch (error) {
@@ -356,7 +406,7 @@ const AiSidebar = () => {
                                                         transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
                                                     />
                                                 </div>
-                                                <p className="text-xs text-slate-500 mt-1">AI is thinking...</p>
+                                                <p className="text-xs text-slate-500 mt-1">EventMate AI is thinking...</p>
                                             </div>
                                         </motion.div>
                                     )}
@@ -371,7 +421,11 @@ const AiSidebar = () => {
                             <div className="flex items-end gap-2">
                                 <textarea
                                     value={inputMessage}
-                                    onChange={(e) => setInputMessage(e.target.value)}
+                                    onChange={(e) => {
+                                        setInputMessage(e.target.value)
+                                        e.target.style.height = "auto"
+                                        e.target.style.height = e.target.scrollHeight + "px"
+                                    }}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Ask me anything..."
                                     rows={1}
