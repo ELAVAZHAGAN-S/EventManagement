@@ -72,30 +72,25 @@ public class MetadataService {
                         Map<String, Object> m = new HashMap<>();
                         m.put("id", v.getVenueId());
                         m.put("name", v.getName());
-                        m.put("location", v.getAddress() + ", " + v.getCity() + ", " + v.getState());
+                        m.put("location", v.getCity() + ", " + v.getState());
                         m.put("capacity", v.getCapacity());
                         return m;
                     }).toList();
 
             List<Map<String, Object>> events = eventRepository.findAll().stream()
                     .filter(e -> e.getStatus() != null && e.getStatus().name().equals("ACTIVE"))
+                    .limit(20)
                     .map(e -> {
                         Map<String, Object> m = new HashMap<>();
                         m.put("id", e.getEventId());
                         m.put("title", e.getTitle());
                         m.put("description",
                                 e.getDescription() != null
-                                        ? e.getDescription().substring(0, Math.min(200, e.getDescription().length()))
+                                        ? e.getDescription().substring(0, Math.min(80, e.getDescription().length()))
                                         : null);
                         m.put("type", e.getEventType() != null ? e.getEventType().name() : "GENERAL");
-                        m.put("format", e.getEventFormat() != null ? e.getEventFormat().name() : "HYBRID");
                         m.put("startDate", e.getStartDate() != null ? e.getStartDate().toString() : null);
-                        m.put("endDate", e.getEndDate() != null ? e.getEndDate().toString() : null);
-                        m.put("ticketType", e.getTicketType() != null ? e.getTicketType().name() : "FREE");
-                        m.put("price", e.getTicketPrice());
-                        m.put("capacity", e.getTotalCapacity());
                         m.put("venue", e.getVenue() != null ? e.getVenue().getName() : null);
-                        m.put("meetingUrl", e.getMeetingUrl() != null ? "Online" : null);
                         return m;
                     }).toList();
 
@@ -157,5 +152,63 @@ public class MetadataService {
      */
     public void forceRefresh() {
         syncMetadata();
+    }
+
+    public String getCompressedMetadata() {
+
+        try {
+
+            List<Map<String, Object>> events = eventRepository.findAll().stream()
+                    .filter(e -> e.getStatus() != null && e.getStatus().name().equals("ACTIVE"))
+                    .limit(10)
+                    .map(e -> {
+                        Map<String, Object> m = new HashMap<>();
+                        m.put("title", e.getTitle());
+                        m.put("date", e.getStartDate() != null ? e.getStartDate().toString() : "");
+                        m.put("venue", e.getVenue() != null ? e.getVenue().getName() : "");
+                        return m;
+                    }).toList();
+
+            List<Map<String, Object>> venues = venueRepository.findAll().stream()
+                    .limit(10)
+                    .map(v -> {
+                        Map<String, Object> m = new HashMap<>();
+                        m.put("name", v.getName());
+                        m.put("city", v.getCity());
+                        return m;
+                    }).toList();
+
+            StringBuilder summary = new StringBuilder();
+
+            summary.append("Events:\n");
+
+            for (Map<String, Object> e : events) {
+                summary.append("- ")
+                        .append(e.get("title"))
+                        .append(" | ")
+                        .append(e.get("venue"))
+                        .append(" | ")
+                        .append(e.get("date"))
+                        .append("\n");
+            }
+
+            summary.append("\nVenues:\n");
+
+            for (Map<String, Object> v : venues) {
+                summary.append("- ")
+                        .append(v.get("name"))
+                        .append(" | ")
+                        .append(v.get("city"))
+                        .append("\n");
+            }
+
+            return summary.toString();
+
+        } catch (Exception e) {
+
+            return "No metadata available.";
+
+        }
+
     }
 }
