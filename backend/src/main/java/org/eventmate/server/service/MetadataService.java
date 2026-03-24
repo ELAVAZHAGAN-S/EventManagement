@@ -78,7 +78,7 @@ public class MetadataService {
                     }).toList();
 
             List<Map<String, Object>> events = eventRepository.findAll().stream()
-                    .filter(e -> e.getStatus() != null && e.getStatus().name().equals("ACTIVE"))
+                    .filter(e -> e.getStatus() != null && !e.getStatus().name().equals("ENDED"))
                     .limit(20)
                     .map(e -> {
                         Map<String, Object> m = new HashMap<>();
@@ -159,7 +159,7 @@ public class MetadataService {
         try {
 
             List<Map<String, Object>> events = eventRepository.findAll().stream()
-                    .filter(e -> e.getStatus() != null && e.getStatus().name().equals("ACTIVE"))
+                    .filter(e -> e.getStatus() != null && !e.getStatus().name().equals("ENDED"))
                     .limit(10)
                     .map(e -> {
                         Map<String, Object> m = new HashMap<>();

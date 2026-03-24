@@ -244,7 +244,7 @@ setLoading(false)
     if (!error) return null;
     return (
       <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-        <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+        <HiExclamationCircle className="w-4 h-4 shrink-0" />
         <span>{error}</span>
       </div>
     );
@@ -279,7 +279,7 @@ setLoading(false)
           <button
             type="button"
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${role === 'USER'
-              ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
+              ? 'bg-linear-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
               : 'text-slate-400 hover:text-slate-300'
               }`}
             onClick={() => handleTabSwitch('USER')}
@@ -290,7 +290,7 @@ setLoading(false)
           <button
             type="button"
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${role === 'ORGANIZATION'
-              ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
+              ? 'bg-linear-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
               : 'text-slate-400 hover:text-slate-300'
               }`}
             onClick={() => handleTabSwitch('ORGANIZATION')}

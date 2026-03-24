@@ -38,12 +38,12 @@ const CategoryTiles = () => {
                         <button
                             key={category.type}
                             onClick={() => handleCategoryClick(category.type)}
-                            className="flex-shrink-0 group"
+                            className="shrink-0 group"
                         >
                             <div className="glass-card p-6 w-36 flex flex-col items-center gap-3 
                                 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/20
                                 group-hover:border-violet-500/50">
-                                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${category.color} 
+                                <div className={`w-14 h-14 rounded-2xl bg-linear-to-br ${category.color} 
                                     flex items-center justify-center shadow-lg transition-transform group-hover:scale-110`}>
                                     <IconComponent className="w-7 h-7 text-white" />
                                 </div>

@@ -71,7 +71,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="glass-card rounded-xl w-full max-w-md animate-in fade-in zoom-in duration-200 flex flex-col max-h-[85vh] text-white">
-                <div className="flex justify-between items-center p-6 border-b border-white/10 flex-shrink-0">
+                <div className="flex justify-between items-center p-6 border-b border-white/10 shrink-0">
                     <h3 className="text-xl font-bold text-white text-glow">Add Guest / Speaker</h3>
                     <button onClick={onClose} className="text-white/50 hover:text-white transition-colors">
                         <X size={24} />

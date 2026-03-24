@@ -139,7 +139,7 @@ const OrgVenues = () => {
                 <h1 className="text-2xl font-bold text-slate-100">Venue Management</h1>
                 <Link
                     to="/org/venues/new"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
+                    className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
                 >
                     <Plus size={20} />
                     Add Venue
@@ -180,7 +180,7 @@ const OrgVenues = () => {
 
                             <h3 className="text-lg font-bold text-slate-100 mb-1">{venue.name}</h3>
                             <div className="flex items-start gap-2 text-sm text-slate-400 mb-4 h-10">
-                                <MapPin size={16} className="mt-0.5 flex-shrink-0" />
+                                <MapPin size={16} className="mt-0.5 shrink-0" />
                                 <span>{venue.address}, {venue.city}, {venue.state}</span>
                             </div>
 

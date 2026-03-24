@@ -53,7 +53,7 @@ const MyActivitySection = () => {
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
-                    <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-blue-500 rounded-full" />
+                    <div className="w-1 h-6 bg-linear-to-b from-violet-500 to-blue-500 rounded-full" />
                     <h2 className="text-xl font-bold text-slate-100">My Activity</h2>
                 </div>
                 <Link
@@ -94,10 +94,10 @@ const MyActivitySection = () => {
                                 <Link
                                     key={booking.bookingId}
                                     to={`/events/${booking.eventId}`}
-                                    className="flex-shrink-0 w-72 glass-card p-4 flex items-center gap-4 
+                                    className="shrink-0 w-72 glass-card p-4 flex items-center gap-4 
                                         hover:border-violet-500/50 transition-all group"
                                 >
-                                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+                                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
                                         <img
                                             src={getImageUrl(booking.eventBannerImageId)}
                                             alt={booking.eventTitle}

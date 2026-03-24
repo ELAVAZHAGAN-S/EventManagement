@@ -38,12 +38,10 @@ const OrgLayout = () => {
                     onMouseEnter={() => setIsHovered(true)}
                     onMouseLeave={() => setIsHovered(false)}
                     className={`
-                        glass flex flex-col fixed inset-y-0 left-0 z-30 top-14
+                        glass fixed left-0 top-[55px] h-[calc(100%-55px)]
+                        flex flex-col z-1
                         transition-all duration-300 ease-out
-                        ${isHovered ? 'w-64' : 'w-[72px]'}
-                        md:translate-x-0 md:sticky md:h-[calc(100vh-3.5rem)]
-                        ${isMobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
-                        ${isHovered || isMobileMenuOpen ? 'sidebar-hovered' : ''}
+                        ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
                     `}
                 >
                     {/* Mobile Header */}
@@ -66,7 +64,7 @@ const OrgLayout = () => {
                                     ${isActive ? 'active' : ''}
                                 `}
                             >
-                                <item.icon className="nav-icon w-6 h-6 flex-shrink-0" />
+                                <item.icon className="nav-icon w-6 h-6 shrink-0" />
                                 <span className={`nav-label font-medium text-sm ${isHovered || isMobileMenuOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'} transition-all duration-300`}>
                                     {item.name}
                                 </span>
@@ -84,8 +82,8 @@ const OrgLayout = () => {
                 </aside>
 
                 {/* Main Content Area */}
-                <main className={`flex-1 p-4 sm:p-6 overflow-x-hidden page-container transition-all duration-300 ease-out ${isHovered ? 'md:ml-64' : 'md:ml-[72px]'}`}>
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 p-4 sm:p-6 overflow-x-hidden page-container transition-all duration-300 ease-out">
+                    <div className="flex-1 w-[calc(100% - 100px)] z-0 ml-[75px]! p-6 overflow-x-hidden page-container">
                         <Outlet />
                     </div>
                 </main>

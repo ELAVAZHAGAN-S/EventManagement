@@ -254,7 +254,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                         >
                             <div className="flex items-start justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
                                         {item.userName ? item.userName.charAt(0).toUpperCase() : '?'}
                                     </div>
                                     <div>

@@ -25,7 +25,24 @@ public class EventService {
     private final FeedbackRepository feedbackRepository;
     private final CouponCodeRepository couponCodeRepository;
 
-    private void generateCoupons(Long eventId, Integer count) {
+    private void syncCouponDiscount(Long eventId, Double discountPercentage) {
+
+    List<CouponCode> coupons = couponCodeRepository.findByEventId(eventId);
+
+        for (CouponCode coupon : coupons) {
+
+            if (!Boolean.TRUE.equals(coupon.getIsUsed())) {
+
+                coupon.setDiscount(
+                        discountPercentage == null ? 0 : discountPercentage.intValue()
+                );
+            }
+        }
+
+        couponCodeRepository.saveAll(coupons);
+    }
+
+    private void generateCoupons(Long eventId, Integer count, Double discountPercentage) {
 
         for (int i = 0; i < count; i++) {
 
@@ -40,27 +57,29 @@ public class EventService {
             coupon.setEventId(eventId);
             coupon.setIsUsed(false);
 
+            coupon.setDiscount(discountPercentage == null ? 0 : discountPercentage.intValue());
+
             couponCodeRepository.save(coupon);
-
         }
-
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public Event createEvent(EventRequest request, Long organizerId) {
+
         log.info("Creating event for organizer: {}", organizerId);
-        // Validation only if NOT Draft (PLANNED)
+
         if (request.getStatus() != Event.EventStatus.PLANNED) {
             validateEventDates(request.getStartDate(), request.getEndDate());
         }
 
         Event event = new Event();
+
         event.setOrganizerId(organizerId);
         event.setTitle(request.getTitle());
         event.setDescription(request.getDescription());
         event.setTagline(request.getTagline());
-        event.setEventFormat(request.getEventFormat()); // Was eventType
-        event.setEventType(request.getEventType()); // Category
+        event.setEventFormat(request.getEventFormat());
+        event.setEventType(request.getEventType());
 
         event.setStartDate(request.getStartDate());
         event.setEndDate(request.getEndDate());
@@ -78,7 +97,6 @@ public class EventService {
         event.setDeliverablesRequired(request.getDeliverablesRequired());
         event.setJudgingCriteria(request.getJudgingCriteria());
 
-        // JSON Fields
         event.setCustomDetails(request.getCustomDetails());
         event.setFaqs(request.getFaqs());
         event.setAgenda(request.getAgenda());
@@ -86,51 +104,42 @@ public class EventService {
         event.setBannerImageId(request.getBannerImageId());
         event.setTicketType(request.getTicketType());
 
-        // New Fields
         event.setTicketPrice(request.getTicketPrice());
         event.setAllowCoupon(request.getAllowCoupon());
         event.setDiscountPercentage(request.getDiscountPercentage());
         event.setAllowMembershipDiscount(request.getAllowMembershipDiscount());
 
-        // Process Guests
+        // Guests
         if (request.getGuests() != null) {
-            request.getGuests().forEach(guestDto -> {
+            request.getGuests().forEach(g -> {
                 Guest guest = new Guest();
-                guest.setName(guestDto.getName());
-                guest.setLinkedinProfile(guestDto.getLinkedinProfile());
-                guest.setPhoto(guestDto.getPhoto());
-                guest.setRole(guestDto.getRole());
-                guest.setAbout(guestDto.getAbout());
+                guest.setName(g.getName());
+                guest.setLinkedinProfile(g.getLinkedinProfile());
+                guest.setPhoto(g.getPhoto());
+                guest.setRole(g.getRole());
+                guest.setAbout(g.getAbout());
                 event.addGuest(guest);
             });
         }
 
-        // Process Ticket Tiers
-        // Process Ticket Tiers
+        // Ticket tiers
         if (request.getTicketTiers() != null && !request.getTicketTiers().isEmpty()) {
-
-            request.getTicketTiers().forEach(tierDto -> {
-
+            request.getTicketTiers().forEach(t -> {
                 TicketTier tier = new TicketTier();
-                tier.setName(tierDto.getName());
-                tier.setPrice(tierDto.getPrice());
-                tier.setCapacity(tierDto.getCapacity());
-                tier.setDescription(tierDto.getDescription());
-
+                tier.setName(t.getName());
+                tier.setPrice(t.getPrice());
+                tier.setCapacity(t.getCapacity());
+                tier.setDescription(t.getDescription());
                 event.addTicketTier(tier);
-
             });
-
         }
 
-        // Set status, default to PLANNED if null or explicitly PLANNED
         if (request.getStatus() == null) {
             event.setStatus(Event.EventStatus.PLANNED);
         } else {
             event.setStatus(request.getStatus());
         }
 
-        // Only validate logistics if the event is being Activated/Launched
         if (event.getStatus() == Event.EventStatus.ACTIVE) {
             validateEventReadiness(request);
         }
@@ -141,17 +150,24 @@ public class EventService {
             event.setVenue(venue);
         }
 
+        // ✅ SAVE ONCE ONLY
         Event savedEvent = eventRepository.save(event);
-        if (request.getAllowCoupon() != null && request.getAllowCoupon()) {
+
+        // ✅ THEN handle coupons
+        if (Boolean.TRUE.equals(request.getAllowCoupon())) {
 
             if (request.getCouponCount() != null && request.getCouponCount() > 0) {
-
-                generateCoupons(savedEvent.getEventId(), request.getCouponCount());
-
+                generateCoupons(
+                        savedEvent.getEventId(),
+                        request.getCouponCount(),
+                        request.getDiscountPercentage());
             }
 
+            syncCouponDiscount(savedEvent.getEventId(), request.getDiscountPercentage());
         }
+
         log.info("Event created successfully with ID: {}", savedEvent.getEventId());
+
         return savedEvent;
     }
 
@@ -256,7 +272,14 @@ public class EventService {
             event.setVenue(venue);
         }
 
-        return eventRepository.save(event);
+        Event updatedEvent = eventRepository.save(event);
+
+        // 🔥 SYNC COUPONS
+        if (event.getAllowCoupon() != null && event.getAllowCoupon()) {
+            syncCouponDiscount(eventId, event.getDiscountPercentage());
+        }
+
+        return updatedEvent;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

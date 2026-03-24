@@ -533,7 +533,7 @@ const CreateEditEvent = () => {
                             <button
                                 type="button"
                                 onClick={addTicketTier}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium shadow-md transition-all bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium shadow-md transition-all bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
                             >
                                 <Plus size={16} />
                                 Add Ticket Type
@@ -598,7 +598,7 @@ const CreateEditEvent = () => {
                                 <button type="button" onClick={handleSubmit((data) => onSubmit(data, 'ACTIVE'), (errors) => {
                                     const firstError = Object.values(errors)[0];
                                     if (firstError) toast.error((firstError as any).message || 'Please fill in required fields');
-                                })} className="px-8 py-2.5 rounded-lg text-white font-bold shadow-lg transition-all transform hover:scale-105 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                                })} className="px-8 py-2.5 rounded-lg text-white font-bold shadow-lg transition-all transform hover:scale-105 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
                                     {isEditMode && watchStatus === 'ACTIVE' ? 'Update & Publish' : 'Launch Event'}
                                 </button>
                             )}

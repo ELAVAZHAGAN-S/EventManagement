@@ -93,7 +93,6 @@ const Navbar = ({ homeLink = '/dashboard', onMenuClick }: NavbarProps) => {
     };
 
     const unreadCount = notifications.filter(n => !n.isRead).length;
-
     return (
         <header className="glass h-14 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-40 border-b border-white/10 transition-all duration-300">
             <div className="flex items-center gap-3">
@@ -126,7 +125,7 @@ const Navbar = ({ homeLink = '/dashboard', onMenuClick }: NavbarProps) => {
                         {unreadCount > 0 && (
                             <span className="absolute top-1 right-1 flex h-3 w-3">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-gradient-to-r from-violet-500 to-pink-500"></span>
+                                <span className="relative inline-flex rounded-full h-3 w-3 bg-linear-to-r from-violet-500 to-pink-500"></span>
                             </span>
                         )}
                     </button>
@@ -154,7 +153,7 @@ const Navbar = ({ homeLink = '/dashboard', onMenuClick }: NavbarProps) => {
                                         className={`px-4 py-3 hover:bg-white/5 cursor-pointer transition-all border-b border-white/5 last:border-0 group ${!notification.isRead ? 'bg-violet-500/5' : ''}`}
                                     >
                                         <div className="flex items-start gap-3">
-                                            <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${!notification.isRead ? 'bg-violet-500' : 'bg-slate-600'}`}></div>
+                                            <div className={`w-2 h-2 mt-2 rounded-full shrink-0 ${!notification.isRead ? 'bg-violet-500' : 'bg-slate-600'}`}></div>
                                             <div className="flex-1 min-w-0">
                                                 <p className={`text-sm ${!notification.isRead ? 'font-medium text-slate-200' : 'text-slate-400'} group-hover:text-violet-300 transition-colors`}>
                                                     {notification.message}
@@ -177,12 +176,22 @@ const Navbar = ({ homeLink = '/dashboard', onMenuClick }: NavbarProps) => {
                 </div>
 
                 {/* Profile */}
-                <Link to="/profile" className="flex items-center gap-2 text-slate-300 hover:text-slate-100 transition-colors group">
-                    {getProfileImage()}
-                    <span className="text-sm font-medium hidden sm:block max-w-[120px] truncate group-hover:text-violet-300 transition-colors">
-                        {user.fullName || 'User'}
-                    </span>
-                </Link>
+                {user.role === "ORGANIZATION" && (
+                    <Link to="/org/profile" className="flex items-center gap-2 text-slate-300 hover:text-slate-100 transition-colors group">
+                        {getProfileImage()}
+                        <span className="text-sm font-medium hidden sm:block max-w-[120px] truncate group-hover:text-violet-300 transition-colors">
+                            {user.fullName || 'User'}
+                        </span>
+                    </Link>
+                )}
+                {user.role === "USER" && (
+                    <Link to="/profile" className="flex items-center gap-2 text-slate-300 hover:text-slate-100 transition-colors group">
+                        {getProfileImage()}
+                        <span className="text-sm font-medium hidden sm:block max-w-[120px] truncate group-hover:text-violet-300 transition-colors">
+                            {user.fullName || 'User'}
+                        </span>
+                    </Link>
+                )}
 
                 {/* Logout */}
                 <button

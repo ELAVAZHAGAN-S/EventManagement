@@ -118,7 +118,7 @@ const FeaturedCarousel = () => {
                         <Link
                             key={event.eventId}
                             to={`/events/${event.eventId}`}
-                            className="w-full flex-shrink-0"
+                            className="w-full shrink-0"
                         >
                             <div className="relative h-72 md:h-96 overflow-hidden">
                                 <img
@@ -127,7 +127,7 @@ const FeaturedCarousel = () => {
                                     className="w-full h-full object-cover"
                                 />
                                 {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
                                 {/* Content */}
                                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
@@ -153,7 +153,7 @@ const FeaturedCarousel = () => {
             {events.length > 1 && !isPaused && (
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/10">
                     <div
-                        className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all"
+                        className="h-full bg-linear-to-r from-violet-500 to-blue-500 transition-all"
                         style={{
                             animation: `progressBar ${AUTO_SCROLL_INTERVAL}ms linear infinite`,
                         }}

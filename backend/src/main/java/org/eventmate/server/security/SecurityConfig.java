@@ -58,18 +58,16 @@ public class SecurityConfig {
 
                 // Configure URL-based authorization
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - no authentication required
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/payment/**").permitAll()
+                        .requestMatchers("/api/coupons/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/files/**").permitAll()
 
-                        // Admin-only endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Organization and Admin access
                         .requestMatchers("/api/organization/**").hasAnyRole("ORGANIZATION", "ADMIN")
 
-                        // All other endpoints require authentication
-                        .anyRequest().authenticated())
+                        .anyRequest().authenticated()
+                    )
 
                 // Stateless session management for JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

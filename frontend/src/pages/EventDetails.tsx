@@ -81,7 +81,7 @@ const EventDetails = () => {
                     className="w-full h-full object-cover"
                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=2670'; }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-8">
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent flex items-end p-8">
                     <div className="text-white">
                         <span className="px-3 py-1 bg-blue-600 text-white rounded-full text-xs font-bold tracking-wide uppercase mb-3 inline-block">
                             {event.eventType}
@@ -150,7 +150,7 @@ const EventDetails = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {event.guests.map((guest: any, idx: number) => (
                                         <div key={guest.id || idx} className="glass-card overflow-hidden flex flex-col">
-                                            <div className="h-24 bg-gradient-to-r from-violet-600 to-blue-600"></div>
+                                            <div className="h-24 bg-linear-to-r from-violet-600 to-blue-600"></div>
                                             <div className="px-6 -mt-12 text-center flex-1 flex flex-col pb-6">
                                                 <div className="w-24 h-24 mx-auto rounded-full overflow-hidden border-4 border-white shadow-md mb-3 bg-white">
                                                     <img
