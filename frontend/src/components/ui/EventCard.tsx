@@ -38,10 +38,10 @@ const EventCard = ({ event, onEnroll }: EventCardProps) => {
                         }}
                     />
                 ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-violet-600 via-blue-600 to-cyan-500" />
+                    <div className="w-full h-full bg-linear-to-br from-violet-600 via-blue-600 to-cyan-500" />
                 )}
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4">
                     <span className={`
                         absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm
                         ${event.eventType === 'ONSITE' ? 'bg-green-500/20 text-green-300 border border-green-500/30' : ''}
@@ -69,7 +69,7 @@ const EventCard = ({ event, onEnroll }: EventCardProps) => {
             </div>
 
             <div className="p-5 flex-1 flex flex-col">
-                <p className="text-slate-400 text-sm mb-4 line-clamp-2 flex-grow">{event.description}</p>
+                <p className="text-slate-400 text-sm mb-4 line-clamp-2 grow">{event.description}</p>
 
                 <div className="space-y-2 mb-5">
                     <div className="flex items-center gap-2 text-sm text-slate-300">
@@ -98,7 +98,7 @@ const EventCard = ({ event, onEnroll }: EventCardProps) => {
                     {onEnroll && (
                         <button
                             onClick={(e) => { e.stopPropagation(); onEnroll(event.eventId); }}
-                            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 rounded-xl transition-all flex items-center justify-center gap-1 group/btn shadow-lg shadow-violet-500/25"
+                            className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-linear-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 rounded-xl transition-all flex items-center justify-center gap-1 group/btn shadow-lg shadow-violet-500/25"
                         >
                             Enroll
                             <HiArrowRight className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" />

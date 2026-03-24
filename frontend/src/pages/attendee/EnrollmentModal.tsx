@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { X, Users, User, Share2, Search, Trash2, CheckCircle, AlertCircle, Loader } from 'lucide-react';
-import PaymentLoader from '../../components/layout/Loader';
 import toast from 'react-hot-toast';
-
+import PaymentLoader from '../../components/layout/Loader'
 import { userService, bookingService } from '../../services/api';
 import SeatSelectionModal from './SeatSelectionModal';
 
@@ -18,7 +17,7 @@ interface EnrollmentModalProps {
 const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupCode }: EnrollmentModalProps) => {
     const validTickets = ticketTypes?.filter(t => (t.price ?? 0) > 0) || [];
     const defaultTicket = validTickets.length ? (validTickets[0].ticketTypeId || validTickets[0].id) : null;
-
+    const [razorpayLoading, setRazorpayLoading] = useState(false);
     const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm({
         defaultValues: {
             attendeeName: '',
@@ -41,6 +40,8 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
     const [bookedSeats, setBookedSeats] = useState<number[]>([]);
     const [selectedSeat, setSelectedSeat] = useState<number | null>(null);
     const [couponCode, setCouponCode] = useState("")
+    const [discount, setDiscount] = useState(0)
+    const [couponValid, setCouponValid] = useState(false)
 
     // Profile & Group States
     const [currentUser, setCurrentUser] = useState<any>(null);
@@ -52,10 +53,6 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
 
     // Bill & Promo States
     const [showBillSummary, setShowBillSummary] = useState(false);
-    // Payment States
-    const [showPayment, setShowPayment] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<'CARD' | 'UPI' | 'RAZORPAY' | null>(null);
-    const [paymentLoading, setPaymentLoading] = useState(false);
     // We need to store valid data to use after payment
     const [pendingFormData, setPendingFormData] = useState<any>(null);
 
@@ -132,48 +129,105 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
     };
 
     const onSubmit = async (data: any) => {
-        // 1. Validate Ticket
+
         if (validTickets.length > 0 && !data.ticketTierId) {
             toast.error("Please select a ticket type");
             return;
         }
 
-        if (validTickets.length === 0) {
-            data.ticketTierId = null;
-        }
-
-        // 2. Validate Seat (Should be selected by now, but double check)
         if (event.eventFormat === 'ONSITE' && !selectedSeat) {
             toast.error("Please select a seat first");
             return;
         }
 
-        // 3. Check Payment
-        // Ensure ticketType comparison is safe (case insensitive if needed)
-        if (!showBillSummary && !showPayment) {
+        if (!showBillSummary) {
             setPendingFormData(data);
             setShowBillSummary(true);
             return;
         }
 
-        await processEnrollment(data);
+        await startRazorpayPayment(data);
     };
 
-    const handleProceedToPayment = () => {
-        setShowBillSummary(false);
-        setShowPayment(true);
+    const startRazorpayPayment = async (data: any) => {
+        try {
+            const ticket = validTickets.find(
+                t => String(t.ticketTypeId || t.id) === String(data.ticketTierId)
+            );
+
+            const baseAmount = ticket ? ticket.price : (event.ticketPrice || 0)
+
+            const amount = couponValid
+                ? baseAmount - (baseAmount * discount) / 100
+                : baseAmount
+
+            const res = await fetch("http://localhost:8080/api/payment/create-order?amount=" + amount, {
+                method: "POST"
+            });
+
+            const order = await res.json();
+
+            const options = {
+                key: "your_key_id",
+                amount: order.amount,
+                currency: "INR",
+                name: "EventMate",
+                description: "Event Booking",
+                order_id: order.id,
+
+                handler: async function (_response: any) {
+                    setRazorpayLoading(true);
+
+                    await processEnrollment(data);
+
+                    setRazorpayLoading(false);
+                    toast.success("Payment Successful & Booking Confirmed");
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.open();
+
+        } catch (err) {
+            toast.error("Payment Failed");
+        }
     };
+
+    const validateCoupon = async () => {
+        if (!couponCode) return
+
+        try {
+            const res = await fetch(
+                `http://localhost:8080/api/coupons/validate?code=${couponCode}&eventId=${event.eventId}`
+            )
+
+            const data = await res.json()
+
+            if (data.valid) {
+                setDiscount(data.discount)
+                setCouponValid(true)
+                toast.success(`Coupon Applied (${data.discount}% OFF)`)
+            } else {
+                setDiscount(0)
+                setCouponValid(false)
+                toast.error("Invalid Coupon")
+            }
+
+        } catch {
+            toast.error("Coupon validation failed")
+        }
+    }
 
     const processEnrollment = async (data: any) => {
         try {
             const payload = {
                 eventId: event.eventId,
-                ticketTypeId: data.ticketTierId ? Number(data.ticketTierId) : undefined,
+                ticketTypeId: data.ticketTierId ? Number(data.ticketTierId) : null,
                 bookingType,
                 attendeeAge: data.attendeeAge ? Number(data.attendeeAge) : 18,
                 seatNumber: selectedSeat,
                 invitedUsers: invitedMembers.map(m => m.email),
-                couponCode,
+                couponCode: couponValid ? couponCode : null,
                 attendeeName: data.attendeeName,
                 contactNumber: data.contactNumber,
                 dietaryRestrictions: data.dietaryRestrictions,
@@ -190,6 +244,14 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
             toast.error(err.response?.data?.message || "Enrollment failed");
         }
     };
+
+    if (razorpayLoading) {
+        return (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/80">
+                <PaymentLoader />
+            </div>
+        );
+    }
 
     if (result) {
         return (
@@ -267,7 +329,11 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
             t => String(t.ticketTypeId || t.id) === String(pendingFormData?.ticketTierId)
         );
 
-        const basePrice = ticket ? ticket.price : (event.ticketPrice || 0);
+        const basePrice = ticket ? ticket.price : (event.ticketPrice || 0)
+
+        const finalPrice = couponValid
+            ? basePrice - (basePrice * discount) / 100
+            : basePrice
 
         return (
             <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -281,12 +347,12 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                     <div className="space-y-4 mb-6">
                         <div className="flex justify-between text-slate-300">
                             <span>Ticket ({ticket?.typeName || 'Standard'})</span>
-                            <span>₹{basePrice.toFixed(2)}</span>
+                            <span>₹{finalPrice.toFixed(2)}</span>
                         </div>
 
                         <div className="border-t border-white/10 pt-2 mt-2 flex justify-between font-bold text-lg text-white">
                             <span>Total Payable</span>
-                            <span>₹{basePrice.toFixed(2)}</span>
+                            <span>₹{finalPrice.toFixed(2)}</span>
                         </div>
                     </div>
 
@@ -301,11 +367,19 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                                 className="flex-1 glass-input uppercase"
                                 disabled={!event.allowCoupon}
                             />
+
+                            <button
+                                type="button"
+                                onClick={validateCoupon}
+                                className="px-3 bg-blue-600 text-white rounded"
+                            >
+                                Apply
+                            </button>
                         </div>
                     </div>
 
                     <button
-                        onClick={handleProceedToPayment}
+                        onClick={() => startRazorpayPayment(pendingFormData)}
                         className="w-full btn-glow text-white shadow-lg"
                     >
                         Proceed to Payment
@@ -322,122 +396,6 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
         );
     }
 
-    // Payment UI
-    if (showPayment) {
-        return (
-            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                <div className={`w-full max-w-md p-6 relative animate-fadeIn text-white ${paymentLoading ? '-translate-y-40' : 'glass-card'}`}>
-                    <button onClick={() => setShowPayment(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors z-[999]">
-                        <X size={24} />
-                    </button>
-
-                    {!paymentLoading && <h2 className="text-2xl font-bold text-white mb-6 text-glow">Payment Method</h2>}
-
-                    {!paymentMethod ? (
-                        <div className="space-y-4">
-                            <button onClick={() => setPaymentMethod('CARD')} className="w-full p-4 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4 hover:bg-white/10 transition-all hover:border-blue-500/50 group">
-                                <div className="p-2 bg-blue-500/20 text-blue-400 rounded-lg group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                    </svg>
-                                </div>
-                                <div className="text-left">
-                                    <div className="font-bold text-white">Credit / Debit Card</div>
-                                    <div className="text-sm text-slate-400">Pay securely with your card</div>
-                                </div>
-                            </button>
-
-                            <button onClick={() => setPaymentMethod('UPI')} className="w-full p-4 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4 hover:bg-white/10 transition-all hover:border-green-500/50 group">
-                                <div className="p-2 bg-green-500/20 text-green-400 rounded-lg group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div className="text-left">
-                                    <div className="font-bold text-white">UPI</div>
-                                    <div className="text-sm text-slate-400">Google Pay, PhonePe, Paytm</div>
-                                </div>
-                            </button>
-
-                            <button onClick={() => setPaymentMethod('RAZORPAY')} className="w-full p-4 rounded-xl border border-white/10 bg-white/5 flex items-center gap-4 hover:bg-white/10 transition-all hover:border-indigo-500/50 group">
-                                <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-lg group-hover:scale-110 transition-transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                </div>
-                                <div className="text-left">
-                                    <div className="font-bold text-white">Razorpay</div>
-                                    <div className="text-sm text-slate-400">Netbanking, Wallet, EMI</div>
-                                </div>
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="space-y-6">
-                            {!paymentLoading && <button onClick={() => setPaymentMethod(null)} className="text-sm text-slate-400 hover:text-white flex items-center gap-1 transition-colors">
-                                ← Back to methods
-                            </button>}
-
-                            {paymentMethod === 'CARD' && !paymentLoading && (
-                                <div className="space-y-4">
-                                    <input type="text" placeholder="Card Number" className="w-full glass-input" />
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <input type="text" placeholder="MM / YY" className="w-full glass-input" />
-                                        <input type="text" placeholder="CVV" className="w-full glass-input" />
-                                    </div>
-                                    <input type="text" placeholder="Cardholder Name" className="w-full glass-input" />
-                                    <button
-                                        disabled={paymentLoading}
-                                        onClick={async () => {
-                                            console.log("Payment confirmed (Card), calling processEnrollment");
-                                            setPaymentLoading(true);
-                                            await processEnrollment(pendingFormData);
-                                            setPaymentLoading(false);
-                                        }}
-                                        className="w-full btn-glow text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Pay & Enroll
-                                    </button>
-                                </div>
-                            )}
-
-                            {(paymentMethod === 'UPI' || paymentMethod === 'RAZORPAY') && !paymentLoading && (
-                                <div className="text-center space-y-6">
-                                    <div className="w-48 h-48 bg-white p-4 mx-auto rounded-xl flex items-center justify-center border border-white/10">
-                                        <div className="text-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-800 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
-                                            </svg>
-                                            <span className="text-sm text-gray-600">QR Code Mockup</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-slate-300">Scan this QR code with your {paymentMethod} app to pay</p>
-                                    <button
-                                        disabled={paymentLoading}
-                                        onClick={async () => {
-                                            console.log("Payment confirmed (UPI/Razorpay), calling processEnrollment");
-                                            setPaymentLoading(true);
-                                            await processEnrollment(pendingFormData);
-                                            setPaymentLoading(false);
-                                        }}
-                                        className="w-full py-3 bg-green-500 text-white rounded-xl font-bold hover:bg-green-600 transition-colors shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        I have made the payment
-                                    </button>
-                                </div>
-                            )}
-
-                            {paymentLoading && (
-                                <div className="fixed inset-0 bg-black/70 backdrop-blur flex items-center justify-center z-[999] h-96">
-                                    <PaymentLoader />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
             <div className="glass-card w-full max-w-lg p-6 relative max-h-[90vh] overflow-y-auto animate-fadeIn text-white">
@@ -445,7 +403,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                     <X size={24} />
                 </button>
 
-                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 mb-6 text-glow">Complete Registration</h2>
+                <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 mb-6 text-glow">Complete Registration</h2>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                     {/* Booking Type Selection */}
@@ -490,7 +448,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                                     Select Your Seat
                                 </button>
                             ) : (
-                                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100 flex items-center justify-between">
+                                <div className="bg-linear-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border border-blue-100 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 bg-white rounded-full shadow-sm">
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
@@ -565,7 +523,7 @@ const EnrollmentModal = ({ event, ticketTypes, onClose, onSuccess, initialGroupC
                         ) : currentUser && (
                             <div className="glass-card bg-white/5 border-white/10 p-4 rounded-xl space-y-3">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                                    <div className="w-12 h-12 bg-linear-to-br from-violet-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                                         {currentUser.fullName ? currentUser.fullName.charAt(0) : <User size={20} />}
                                     </div>
                                     <div className="flex-1">

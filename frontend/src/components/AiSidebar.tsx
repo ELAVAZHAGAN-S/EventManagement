@@ -212,12 +212,46 @@ const AiSidebar = () => {
     };
 
     // Quick action buttons
-    const quickActions = [
-        { label: 'Browse Events', prompt: 'Show me all events' },
-        { label: 'Create Event', prompt: 'Take me to create event page' },
-        { label: 'My Bookings', prompt: 'Show my bookings' },
-        { label: 'Manage Venues', prompt: 'Go to venue management' }
-    ];
+    const storedUser = localStorage.getItem("user")
+
+    let role = "user"
+
+    if (storedUser) {
+        try {
+            const user = JSON.parse(storedUser)
+            role = (user.role || "user").toLowerCase()
+        } catch {
+            role = "user"
+        }
+    }
+
+    let quickActions = []
+
+    if (role.includes("admin")) {
+        quickActions = [
+            { label: "Manage Events", prompt: "Open admin events management" },
+            { label: "Manage Users", prompt: "Open user management page" },
+            { label: "Show Analytics", prompt: "Show admin analytics dashboard" }
+        ]
+    }
+
+    else if (role.includes("organizer") || role.includes("organization")) {
+        quickActions = [
+            { label: "Create Event", prompt: "Take me to create event page" },
+            { label: "Manage Events", prompt: "Show my events" },
+            { label: "Manage Venues", prompt: "Go to venue management" },
+            { label: "Coupons", prompt: "Open coupons page" }
+        ]
+    }
+
+    else {
+        quickActions = [
+            { label: "Browse Events", prompt: "Show me all events" },
+            { label: "My Bookings", prompt: "Show my bookings" },
+            { label: "Upcoming Events", prompt: "Show upcoming events" },
+            { label: "Profile", prompt: "Open my profile" }
+        ]
+    }
 
     // Don't render anything if user is not authenticated or on public pages
     if (!shouldShowSidebar) {
@@ -234,7 +268,7 @@ const AiSidebar = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsOpen(true)}
-                    className="fixed right-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-violet-600 to-blue-600 text-white p-3 rounded-l-2xl shadow-2xl hover:shadow-violet-500/25 z-50 flex items-center gap-2 group transition-all duration-300"
+                    className="fixed right-0 top-1/2 -translate-y-1/2 bg-linear-to-r from-violet-600 to-blue-600 text-white p-3 rounded-l-2xl shadow-2xl hover:shadow-violet-500/25 z-50 flex items-center gap-2 group transition-all duration-300"
                 >
                     <Sparkles size={20} className="animate-pulse" />
                     <span className="max-w-0 overflow-hidden group-hover:max-w-[100px] transition-all duration-300 whitespace-nowrap">
@@ -267,9 +301,9 @@ const AiSidebar = () => {
                         className="fixed right-0 top-0 h-full w-[420px] max-w-[90vw] bg-slate-900 border-l border-white/10 shadow-2xl z-50 flex flex-col"
                     >
                         {/* Header */}
-                        <div className="p-4 bg-gradient-to-r from-violet-600/20 to-blue-600/20 border-b border-white/10 flex justify-between items-center">
+                        <div className="p-4 bg-linear-to-r from-violet-600/20 to-blue-600/20 border-b border-white/10 flex justify-between items-center">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-gradient-to-br from-violet-500 to-blue-500 rounded-xl">
+                                <div className="p-2 bg-linear-to-br from-violet-500 to-blue-500 rounded-xl">
                                     <Bot size={20} className="text-white" />
                                 </div>
                                 <div>
@@ -302,7 +336,7 @@ const AiSidebar = () => {
                                         : 'text-slate-400 hover:bg-white/5'
                                         }`}
                                 >
-                                    <span className="max-w-[80px] truncate">{session.title}</span>
+                                    <span className="max-w-20 truncate">{session.title}</span>
                                     <X
                                         size={12}
                                         className="opacity-0 group-hover:opacity-100 text-red-400 hover:text-red-300"
@@ -316,7 +350,7 @@ const AiSidebar = () => {
                         <div className="flex-1 overflow-y-auto p-4 space-y-4">
                             {!activeSession || activeSession.messages.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-center px-4">
-                                    <div className="p-4 bg-gradient-to-br from-violet-500/20 to-blue-500/20 rounded-2xl mb-4">
+                                    <div className="p-4 bg-linear-to-br from-violet-500/20 to-blue-500/20 rounded-2xl mb-4">
                                         <Sparkles size={32} className="text-violet-400" />
                                     </div>
                                     <h3 className="text-lg font-semibold text-white mb-2">How can I help you?</h3>
@@ -347,7 +381,7 @@ const AiSidebar = () => {
                                         >
                                             <div className={`p-2 rounded-xl shrink-0 ${msg.role === 'user'
                                                 ? 'bg-violet-500'
-                                                : 'bg-gradient-to-br from-slate-700 to-slate-800'
+                                                : 'bg-linear-to-br from-slate-700 to-slate-800'
                                                 }`}>
                                                 {msg.role === 'user' ? (
                                                     <User size={16} className="text-white" />
@@ -385,7 +419,7 @@ const AiSidebar = () => {
                                             animate={{ opacity: 1, y: 0 }}
                                             className="flex gap-3"
                                         >
-                                            <div className="p-2 rounded-xl shrink-0 bg-gradient-to-br from-slate-700 to-slate-800">
+                                            <div className="p-2 rounded-xl shrink-0 bg-linear-to-br from-slate-700 to-slate-800">
                                                 <Bot size={16} className="text-violet-400" />
                                             </div>
                                             <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3">
@@ -435,7 +469,7 @@ const AiSidebar = () => {
                                 <button
                                     onClick={sendMessage}
                                     disabled={!inputMessage.trim() || isLoading}
-                                    className="p-3 bg-gradient-to-r from-violet-600 to-blue-600 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-violet-500/25 transition-all"
+                                    className="p-3 bg-linear-to-r from-violet-600 to-blue-600 rounded-xl text-white disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-violet-500/25 transition-all"
                                 >
                                     {isLoading ? (
                                         <Loader2 size={20} className="animate-spin" />

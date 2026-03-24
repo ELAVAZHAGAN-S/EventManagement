@@ -85,7 +85,7 @@ const OrgEventDetails = () => {
                     alt={event.title}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                     <div className="flex items-start justify-between">
                         <div>
@@ -243,7 +243,7 @@ const AttendeesView = ({ attendees }: { attendees: EventAttendee[] }) => (
                             <tr key={attendee.bookingId} className="hover:bg-white/5 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                                        <div className="w-8 h-8 rounded-full bg-linear-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white text-xs font-bold">
                                             {(attendee.attendeeName || attendee.userName)?.charAt(0).toUpperCase()}
                                         </div>
                                         <span className="text-sm font-medium text-slate-100">
@@ -308,7 +308,7 @@ const FeedbackView = ({ feedback, rating }: { feedback: EventFeedback[], rating:
                 <div key={item.feedbackId} className="glass-card bg-white/5 p-5 rounded-xl hover:bg-white/[0.07] transition-colors">
                     <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold">
+                            <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold">
                                 {item.userName?.charAt(0).toUpperCase() || '?'}
                             </div>
                             <div>

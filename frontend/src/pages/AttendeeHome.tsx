@@ -57,7 +57,7 @@ const AttendeeHome = () => {
                 {/* Featured Carousel */}
                 <div className="py-6">
                     <div className="flex items-center gap-2 mb-4">
-                        <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-blue-500 rounded-full" />
+                        <div className="w-1 h-6 bg-linear-to-b from-violet-500 to-blue-500 rounded-full" />
                         <h2 className="text-xl font-bold text-slate-100">Featured</h2>
                     </div>
                     <FeaturedCarousel />
@@ -70,7 +70,7 @@ const AttendeeHome = () => {
                 <div className="py-8">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                         <div className="flex items-center gap-2">
-                            <div className="w-1 h-6 bg-gradient-to-b from-violet-500 to-blue-500 rounded-full" />
+                            <div className="w-1 h-6 bg-linear-to-b from-violet-500 to-blue-500 rounded-full" />
                             <h2 className="text-xl font-bold text-slate-100">All Events</h2>
                         </div>
 

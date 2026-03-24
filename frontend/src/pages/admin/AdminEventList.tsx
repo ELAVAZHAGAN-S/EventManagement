@@ -4,11 +4,8 @@ import {
     HiTrash,
     HiMagnifyingGlass,
     HiFunnel,
-    HiSparkles,
-    HiEye
-} from 'react-icons/hi2';
+    HiSparkles} from 'react-icons/hi2';
 import { adminService } from '../../services/api';
-import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { getImageUrl } from '../../config';
 

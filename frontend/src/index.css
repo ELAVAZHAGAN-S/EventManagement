@@ -8,6 +8,26 @@
    Violet/Blue gradients with glass effects
    ======================================== */
 
+@keyframes zoomIn {
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes rzpSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rzp-ring {
+  border: 3px solid rgba(99,102,241,0.2);
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: rzpSpin 0.8s linear infinite;
+}
+
 :root {
   /* Typography */
   --font-heading: 'Outfit', sans-serif;

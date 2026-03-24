@@ -37,13 +37,11 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
                 className={`
-                    glass flex flex-col fixed inset-y-0 left-0 z-30 
-                    transition-all duration-300 ease-out
-                    ${isHovered ? 'w-64' : 'w-[72px]'}
-                    md:translate-x-0 md:sticky md:top-14 md:h-[calc(100vh-3.5rem)]
-                    ${isOpen ? 'translate-x-0 w-64' : '-translate-x-full'}
-                    ${isHovered || isOpen ? 'sidebar-hovered' : ''}
-                `}
+                        glass fixed left-0 top-[55px] h-[calc(100%-55px)]
+                        flex flex-col z-1
+                        transition-all duration-300 ease-out
+                        ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
+                    `}
             >
                 {/* Mobile Header */}
                 <div className="md:hidden h-14 flex items-center justify-center border-b border-white/10">
@@ -65,7 +63,7 @@ const Sidebar = ({ isOpen = false, onClose }: SidebarProps) => {
                                 ${isActive ? 'active' : ''}
                             `}
                         >
-                            <item.icon className="nav-icon w-6 h-6 flex-shrink-0" />
+                            <item.icon className="nav-icon w-6 h-6 shrink-0" />
                             <span className={`nav-label font-medium text-sm ${isHovered || isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'} transition-all duration-300`}>
                                 {item.name}
                             </span>
@@ -130,7 +128,7 @@ const SidebarTimeline = ({ isExpanded }: TimelineProps) => {
             >
                 <div className="relative">
                     <HiClock className="w-6 h-6 text-violet-400 group-hover:text-violet-300 transition-colors" />
-                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full text-[10px] font-bold flex items-center justify-center text-white notification-badge">
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-linear-to-r from-violet-500 to-blue-500 rounded-full text-[10px] font-bold flex items-center justify-center text-white notification-badge">
                         {daysUntil}
                     </span>
                 </div>
@@ -161,7 +159,7 @@ const SidebarTimeline = ({ isExpanded }: TimelineProps) => {
                                 {event.eventTitle}
                             </p>
                             <p className="text-xs text-slate-400 flex items-center gap-1">
-                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-blue-500"></span>
+                                <span className="inline-block w-1.5 h-1.5 rounded-full bg-linear-to-r from-violet-500 to-blue-500"></span>
                                 {days === 0 ? 'Today!' : days === 1 ? 'Tomorrow!' : `${days} days`}
                             </p>
                         </div>
@@ -171,7 +169,7 @@ const SidebarTimeline = ({ isExpanded }: TimelineProps) => {
 
             <button
                 onClick={() => navigate('/my-bookings')}
-                className="mt-3 w-full text-xs bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white px-3 py-2 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-violet-500/25"
+                className="mt-3 w-full text-xs bg-linear-to-r from-violet-600 to-blue-600 hover:from-violet-500 hover:to-blue-500 text-white px-3 py-2 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-violet-500/25"
             >
                 View All Bookings
             </button>

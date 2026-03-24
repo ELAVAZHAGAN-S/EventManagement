@@ -91,7 +91,7 @@ const ForgotPassword = () => {
                         </div>
                         {showError && (
                             <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-                                <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+                                <HiExclamationCircle className="w-4 h-4 shrink-0" />
                                 <span>{error}</span>
                             </div>
                         )}

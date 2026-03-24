@@ -206,7 +206,7 @@ const CreateEditVenue = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium shadow-sm disabled:opacity-50"
+                            className="px-6 py-2 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium shadow-sm disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : (isEditMode ? 'Update Venue' : 'Create Venue')}
                         </button>

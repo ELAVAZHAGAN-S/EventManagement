@@ -59,14 +59,14 @@ const SeatSelectionModal = ({ totalCapacity, bookedSeats, onClose, onConfirm }: 
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-60">
             <div className="glass-card w-full max-w-2xl p-6 relative animate-fadeIn flex flex-col max-h-[90vh] text-white">
                 <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
                     <X size={24} />
                 </button>
 
                 <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 text-glow">Select Your Seat</h2>
+                    <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-purple-400 text-glow">Select Your Seat</h2>
                     <p className="text-slate-400">Floor {currentFloor} of {totalFloors}</p>
                 </div>
 
