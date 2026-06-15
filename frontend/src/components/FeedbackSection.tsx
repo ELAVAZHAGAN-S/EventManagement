@@ -15,8 +15,8 @@ interface FeedbackItem {
 
 interface FeedbackSectionProps {
     eventId: number;
-    startDate?: string; // ISO date string of event start
-    isEnrolled?: boolean; // Whether the current user is enrolled
+    startDate?: string;
+    isEnrolled?: boolean;
 }
 
 const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSectionProps) => {
@@ -24,14 +24,10 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
     const [loading, setLoading] = useState(true);
     const [hasSubmitted, setHasSubmitted] = useState(false);
     const [averageRating, setAverageRating] = useState(0);
-
-    // Form state
     const [rating, setRating] = useState(0);
     const [hoverRating, setHoverRating] = useState(0);
     const [comments, setComments] = useState('');
     const [submitting, setSubmitting] = useState(false);
-
-    // Check if event has started
     const eventHasStarted = !startDate || new Date() >= new Date(startDate);
 
     useEffect(() => {
@@ -77,7 +73,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
             setHasSubmitted(true);
             setRating(0);
             setComments('');
-            loadFeedbackData(); // Refresh list
+            loadFeedbackData();
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to submit feedback');
         } finally {
@@ -90,9 +86,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
         setComments('');
     };
 
-    const handleKeyDown = () => {
-        // Allow Enter for newline naturally in textarea
-    };
+    const handleKeyDown = () => {};
 
     if (loading) {
         return (
@@ -108,13 +102,13 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
     return (
         <div className="glass-card p-8 mt-8">
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-amber-500/20 text-amber-400 rounded-lg">
+                <div className="p-2 bg-amber-200/20 text-amber-200 rounded-lg">
                     <MessageSquare size={24} />
                 </div>
                 <div>
                     <h3 className="text-xl font-bold text-slate-100">Event Feedback</h3>
                     <div className="flex items-center gap-2 mt-1">
-                        <div className="flex text-amber-400">
+                        <div className="flex text-amber-200">
                             {[1, 2, 3, 4, 5].map((star) => (
                                 <Star
                                     key={star}
@@ -133,7 +127,6 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                 </div>
             </div>
 
-            {/* Submit Feedback Section */}
             {!isEnrolled ? (
                 <div className="bg-slate-500/10 border border-slate-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
                     <div className="p-2 bg-slate-500/20 text-slate-400 rounded-full">
@@ -142,14 +135,14 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                     <p className="text-slate-400 text-sm">Enroll in this event to share your feedback</p>
                 </div>
             ) : !eventHasStarted ? (
-                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
-                    <div className="p-2 bg-yellow-500/20 text-yellow-400 rounded-full">
+                <div className="bg-yellow-500/10 border border-amber-500/30 rounded-xl p-4 mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-amber-100/20 text-amber-100 rounded-full">
                         <Clock size={20} />
                     </div>
                     <div>
-                        <p className="text-yellow-300 text-sm font-medium">Feedback opens after event starts</p>
+                        <p className="text-amber-200 text-sm font-medium">Feedback opens after event starts</p>
                         {startDate && (
-                            <p className="text-yellow-400/70 text-xs">Event starts: {new Date(startDate).toLocaleString()}</p>
+                            <p className="text-amber-200/70 text-xs">Event starts: {new Date(startDate).toLocaleString()}</p>
                         )}
                     </div>
                 </div>
@@ -165,8 +158,6 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
             ) : (
                 <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-6">
                     <h4 className="text-sm font-medium text-slate-300 mb-4">Share Your Experience</h4>
-
-                    {/* Star Rating */}
                     <div className="flex items-center gap-2 mb-4">
                         <span className="text-sm text-slate-400 mr-2">Your Rating:</span>
                         <div className="flex gap-1">
@@ -182,7 +173,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                                     <Star
                                         size={28}
                                         className={`transition-colors ${star <= (hoverRating || rating)
-                                            ? 'text-amber-400 fill-amber-400'
+                                            ? 'text-amber-200 fill-amber-200'
                                             : 'text-slate-500'
                                             }`}
                                     />
@@ -190,7 +181,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                             ))}
                         </div>
                         {rating > 0 && (
-                            <span className="text-sm text-amber-400 ml-2">
+                            <span className="text-sm text-amber-100 ml-2">
                                 {rating === 1 && 'Poor'}
                                 {rating === 2 && 'Fair'}
                                 {rating === 3 && 'Good'}
@@ -200,7 +191,6 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                         )}
                     </div>
 
-                    {/* Feedback Text */}
                     <textarea
                         value={comments}
                         onChange={(e) => setComments(e.target.value)}
@@ -211,7 +201,6 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                         style={{ minHeight: '80px' }}
                     />
 
-                    {/* Action Buttons */}
                     <div className="flex justify-end gap-3 mt-4">
                         <button
                             type="button"
@@ -225,7 +214,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                             type="button"
                             onClick={handleSubmit}
                             disabled={submitting}
-                            className="btn-glow px-6 py-2 flex items-center gap-2 disabled:opacity-50"
+                            className="bg-amber-200 rounded-xl hover:bg-amber-100 text-black px-6 py-3 flex items-center gap-2 disabled:opacity-50"
                         >
                             {submitting ? (
                                 <Loader className="animate-spin" size={16} />
@@ -238,7 +227,6 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                 </div>
             )}
 
-            {/* Feedback List */}
             <div className="space-y-4">
                 <h4 className="text-sm font-medium text-slate-400 border-b border-white/10 pb-2">
                     All Reviews ({feedbacks.length})
@@ -254,7 +242,7 @@ const FeedbackSection = ({ eventId, startDate, isEnrolled = false }: FeedbackSec
                         >
                             <div className="flex items-start justify-between mb-2">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                                    <div className="w-10 h-10 rounded-full bg-amber-200 flex items-center justify-center text-black font-bold text-sm">
                                         {item.userName ? item.userName.charAt(0).toUpperCase() : '?'}
                                     </div>
                                     <div>

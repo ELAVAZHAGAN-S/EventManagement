@@ -104,11 +104,10 @@ const AdminEventList = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-                        <HiSparkles className="w-6 h-6 text-violet-400" />
+                        <HiSparkles className="w-6 h-6 text-amber-200" />
                         Event Management
                     </h1>
                     <p className="text-slate-400 mt-1">Manage all events on the platform</p>

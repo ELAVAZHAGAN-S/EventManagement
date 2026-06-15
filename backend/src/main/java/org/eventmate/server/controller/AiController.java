@@ -11,9 +11,6 @@ import org.eventmate.server.service.MetadataService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * AI Chat Controller - Handles AI assistant interactions
- */
 @RestController
 @RequestMapping("/api/ai")
 @RequiredArgsConstructor
@@ -36,14 +33,11 @@ public class AiController {
                         .isCommand(false)
                         .build());
             }
-            // 1. Get cached metadata for context
             String metadata = metadataService.getCompressedMetadata();
 
-            // 2. Call AI Agent
             String aiResponse = aiService.chat(request.getMessage(), metadata, request.getRole());
             log.debug("AI Response: {}", aiResponse);
 
-            // 3. Parse response to detect commands
             ChatResponse response = parseAiResponse(aiResponse);
 
             return ResponseEntity.ok(response);
@@ -68,12 +62,8 @@ public class AiController {
         return ResponseEntity.ok(metadataService.readMetadata());
     }
 
-    /**
-     * Parse AI response to detect navigation commands
-     */
     private ChatResponse parseAiResponse(String aiResponse) {
         try {
-            // Check if response is a JSON command
             String trimmed = aiResponse.trim();
             if (trimmed.startsWith("{") && trimmed.contains("\"action\"")) {
                 JsonNode json = objectMapper.readTree(trimmed);
@@ -90,11 +80,9 @@ public class AiController {
                 }
             }
         } catch (Exception e) {
-            // Not a valid JSON command, treat as text response
             log.debug("Response is not a command: {}", e.getMessage());
         }
 
-        // Regular text response
         return ChatResponse.builder()
                 .response(aiResponse)
                 .isCommand(false)

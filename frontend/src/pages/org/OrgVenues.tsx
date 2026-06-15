@@ -31,7 +31,6 @@ const OrgVenues = () => {
     const loadData = async () => {
         setLoading(true);
         try {
-            // Always load venues to map IDs to Names
             const venuesData = await orgService.getAllVenues();
             const plannedEventsData = await orgService.getMyPlannedEvents();
             setVenues(venuesData);
@@ -105,8 +104,6 @@ const OrgVenues = () => {
         }
 
         try {
-            // Construct LocalDateTime strings (YYYY-MM-DDTHH:mm:ss) to preserve local time
-            // and avoid timezone shifting that might cause @Future validation to fail
             const startDateTime = `${bookingData.bookingDate}T${bookingData.startTime}:00`;
             const endDateTime = `${bookingData.bookingDate}T${bookingData.endTime}:00`;
 
@@ -118,7 +115,7 @@ const OrgVenues = () => {
             });
             toast.success('Venue booked successfully!');
             setBookingModal({ isOpen: false, venue: null });
-            setActiveTab('bookings'); // Switch to bookings tab
+            setActiveTab('bookings'); 
         } catch (error: any) {
             console.error('Booking failed', error);
             toast.error(error.response?.data?.message || 'Failed to book venue');
@@ -128,7 +125,7 @@ const OrgVenues = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-200"></div>
             </div>
         );
     }
@@ -139,23 +136,22 @@ const OrgVenues = () => {
                 <h1 className="text-2xl font-bold text-slate-100">Venue Management</h1>
                 <Link
                     to="/org/venues/new"
-                    className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-200 text-black! hover:bg-amber-100 rounded-lg transition-all"
                 >
                     <Plus size={20} />
                     Add Venue
                 </Link>
             </div>
 
-            {/* Tabs */}
             <div className="flex border-b border-white/10">
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'venues' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'venues' ? 'border-amber-200 text-amber-200' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                     onClick={() => setActiveTab('venues')}
                 >
                     All Venues
                 </button>
                 <button
-                    className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'bookings' ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
+                    className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === 'bookings' ? 'border-amber-200 text-amber-200' : 'border-transparent text-slate-400 hover:text-slate-200'}`}
                     onClick={() => setActiveTab('bookings')}
                 >
                     My Bookings
@@ -165,9 +161,9 @@ const OrgVenues = () => {
             {activeTab === 'venues' ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {venues.map((venue) => (
-                        <div key={venue.venueId} className="glass-card p-6 hover:bg-white/5 transition-colors">
+                        <div key={venue.venueId} className="glass-card py-8 px-10 hover:bg-white/5 transition-colors">
                             <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-blue-500/20 text-blue-400 rounded-lg">
+                                <div className="p-3 bg-amber-200/20 text-amber-200 rounded-lg">
                                     <Building size={24} />
                                 </div>
                                 <button
@@ -184,7 +180,7 @@ const OrgVenues = () => {
                                 <span>{venue.address}, {venue.city}, {venue.state}</span>
                             </div>
 
-                            <div className="pt-4 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
+                            <div className="pt-4 px-6 border-t border-white/10 grid grid-cols-2 gap-10 text-sm">
                                 <div>
                                     <p className="text-slate-500">Capacity</p>
                                     <p className="font-medium text-slate-200">{venue.capacity}</p>
@@ -197,10 +193,9 @@ const OrgVenues = () => {
                                 </div>
                             </div>
 
-                            {/* Book Button - Mockup for now, could be a modal */}
-                            <div className="mt-4 pt-2">
+                            <div className="mt-4 pt-2 flex justify-center">
                                 <button
-                                    className="w-full py-2 bg-white/5 text-blue-400 font-medium rounded hover:bg-white/10 transition"
+                                    className="w-72 py-3 bg-white/5 text-amber-200 font-medium rounded-2xl hover:bg-white/10 transition"
                                     onClick={() => handleBookClick(venue)}
                                 >
                                     Book This Venue
@@ -217,7 +212,7 @@ const OrgVenues = () => {
             ) : (
                 <div className="space-y-4">
                     {bookings.map((booking) => (
-                        <div key={booking.bookingId} className="glass-card p-6 flex justify-between items-center">
+                        <div key={booking.bookingId} className="glass-card py-6 px-10 flex justify-between items-center">
                             <div>
                                 <h3 className="text-lg font-bold text-slate-100">{booking.venueName}</h3>
                                 <div className="text-sm text-slate-400 mt-1">
@@ -242,11 +237,11 @@ const OrgVenues = () => {
                     )}
                 </div>
             )}
-            {/* Booking Modal */}
+
             {bookingModal.isOpen && bookingModal.venue && (
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-slate-100 mb-4">Book {bookingModal.venue.name}</h2>
+                    <div className="bg-white/5 border border-amber-100 rounded-4xl shadow-2xl max-w-md w-full py-6 px-10">
+                        <h2 className="text-xl font-bold text-white mb-4">Book {bookingModal.venue.name}</h2>
                         <form onSubmit={handleBookingSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Select Event (Planned)</label>
@@ -265,14 +260,13 @@ const OrgVenues = () => {
                                         ))}
                                     </select>
                                 ) : (
-                                    <div className="text-sm text-yellow-500 bg-yellow-500/10 p-2 rounded">
-                                        No planned events. <Link to="/org/events/new" className="underline hover:text-yellow-400">Create one first</Link>.
+                                    <div className="text-sm mt-3 text-amber-100 bg-amber-200/10 border border-amber-200 py-2 px-8 rounded-2xl">
+                                        No planned events. <Link to="/org/events/new" className="underline hover:text-amber-600">Create one first</Link>.
                                     </div>
                                 )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">
-                                    {/* Intentionally left blank for Date label if using loop, below is specific */}
                                     Date
                                 </label>
                                 <input
@@ -316,7 +310,7 @@ const OrgVenues = () => {
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                                    className="flex-1 py-2 bg-amber-200 text-black rounded-lg hover:bg-amber-100 transition"
                                 >
                                     Confirm Booking
                                 </button>

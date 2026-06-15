@@ -81,8 +81,8 @@ const MyBookings = () => {
 
     return (
         <AttendeeLayout>
-            <h1 className="text-2xl font-bold text-slate-100 mb-6 flex items-center gap-2">
-                <HiTicket className="w-7 h-7 text-violet-400" />
+            <h1 className="text-2xl font-bold text-white mb-6 flex items-center gap-4">
+                <HiTicket className="w-10 h-10 text-amber-200" />
                 My Bookings
             </h1>
 
@@ -95,7 +95,7 @@ const MyBookings = () => {
                     {bookings.map((booking) => (
                         <div
                             key={booking.bookingId}
-                            className="glass-card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 card-lift cursor-pointer"
+                            className="glass-card shadow-none! py-6 px-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 card-lift cursor-pointer"
                             onClick={() => booking.eventDetails && navigate(`/events/${booking.eventId}`)}
                         >
                             <div className="flex-1">
@@ -146,16 +146,17 @@ const MyBookings = () => {
                 </div>
             ) : (
                 <div className="text-center py-16 glass-card">
-                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-violet-500/20">
-                        <HiTicket className="w-8 h-8 text-violet-400" />
+                    <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 bg-amber-200/50">
+                        <HiTicket className="w-8 h-8 text-amber-100" />
                     </div>
                     <h3 className="text-lg font-medium text-slate-200">No bookings yet</h3>
                     <p className="text-slate-400 mb-6">Explore events and book your seat today!</p>
                     <button
                         onClick={() => navigate('/events')}
-                        className="btn-glow px-6 py-2"
-                    >
-                        Browse Events
+                        className="btn2 w-64!">
+                        <span className="spn2">
+                            Browse Events
+                        </span>
                     </button>
                 </div>
             )}

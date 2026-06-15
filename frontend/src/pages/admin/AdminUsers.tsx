@@ -97,22 +97,16 @@ export default function AdminUsers() {
     return (
 
         <div className="space-y-6">
-
-            {/* HEADER */}
-
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-
                 <div>
                     <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-                        <HiSparkles className="w-6 h-6 text-violet-400" />
+                        <HiSparkles className="w-6 h-6 text-amber-200" />
                         User Management
                     </h1>
                     <p className="text-slate-400 mt-1">
                         Manage platform users
                     </p>
                 </div>
-
-                {/* FILTERS */}
 
                 <div className="flex gap-3 w-full md:w-auto">
 
@@ -155,14 +149,9 @@ export default function AdminUsers() {
 
             </div>
 
-            {/* TABLE */}
-
             <div className="glass-card overflow-hidden">
-
                 <div className="overflow-x-auto">
-
                     <table className="w-full">
-
                         <thead className="bg-white/5 text-center border-b border-white/10">
                             <tr>
                                 <th className="px-6 py-4 text-xs font-semibold text-slate-400 uppercase">User</th>
@@ -218,9 +207,7 @@ export default function AdminUsers() {
                                     </td>
 
                                     <td className="px-6 py-4">
-
                                         <div className="flex items-center justify-center gap-3">
-
                                             {user.role !== "ADMIN" && (
                                                 <>
 

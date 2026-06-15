@@ -39,14 +39,14 @@ const StyledWrapper = styled.div`
     height: 35px;
     background: linear-gradient(
       145deg,
-      oklch(70.7% 0.165 254.624),
-      oklch(71.4% 0.203 305.504)
+      oklch(100% 0.00011 271.152),
+      oklch(92.4% 0.12 95.746)
     );
     border-radius: 12px;
     box-shadow:
-      0 0 12px oklch(70.7% 0.165 254.624),
-      inset 0 0 8px oklch(70.7% 0.165 254.624),
-      inset 3px 3px 8px oklch(71.4% 0.203 305.504);
+      0 0 12px oklch(92.4% 0.12 95.746),
+      inset 0 0 8px oklch(92.4% 0.12 95.746),
+      inset 3px 3px 8px oklch(100% 0.00011 271.152);
     animation: pulse 1.6s ease-in-out infinite;
     transition: transform 0.4s ease;
   }
@@ -56,14 +56,14 @@ const StyledWrapper = styled.div`
     100% {
       transform: scale(1);
       box-shadow:
-        0 0 15px oklch(70.7% 0.165 254.624),
-        inset 0 0 8px oklch(70.7% 0.165 254.624);
+        0 0 15px oklch(92.4% 0.12 95.746),
+        inset 0 0 8px oklch(92.4% 0.12 95.746);
     }
     50% {
       transform: scale(1.3);
       box-shadow:
-        0 0 25px oklch(70.7% 0.165 254.624),
-        inset 0 0 12px oklch(71.4% 0.203 305.504);
+        0 0 25px oklch(92.4% 0.12 95.746),
+        inset 0 0 12px oklch(100% 0.00011 271.152);
     }
   }
 
@@ -94,97 +94,3 @@ const StyledWrapper = styled.div`
 `;
 
 export default Loader;
-
-/* 
-import React from 'react';
-import styled from 'styled-components';
-
-const Loader = () => {
-  return (
-    <StyledWrapper>
-      <div className="pyramid-loader">
-        <div className="wrapper">
-          <span className="side side1" />
-          <span className="side side2" />
-          <span className="side side3" />
-          <span className="side side4" />
-          <span className="shadow" />
-        </div>
-      </div>
-    </StyledWrapper>
-  );
-}
-
-const StyledWrapper = styled.div`
-  .pyramid-loader {
-    position: relative;
-    width: 300px;
-    height: 300px;
-    display: block;
-    transform-style: preserve-3d;
-    transform: rotateX(-20deg);
-  }
-
-  .wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    transform-style: preserve-3d;
-    animation: spin 4s linear infinite;
-  }
-
-  @keyframes spin {
-    100% {
-      transform: rotateY(360deg);
-    }
-  }
-
-  .pyramid-loader .wrapper .side {
-    width: 70px;
-    height: 70px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    transform-origin: center top;
-    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  }
-
-  .pyramid-loader .wrapper .side1 {
-    transform: rotateZ(-30deg) rotateY(90deg);
-    background: linear-gradient(to bottom right, #1afbf0, #da00ff);
-  }
-
-  .pyramid-loader .wrapper .side2 {
-    transform: rotateZ(30deg) rotateY(90deg);
-    background: linear-gradient(to bottom right, #1afbf0, #da00ff);
-  }
-
-  .pyramid-loader .wrapper .side3 {
-    transform: rotateX(30deg);
-    background: linear-gradient(to bottom right, #1afbf0, #da00ff);
-  }
-
-  .pyramid-loader .wrapper .side4 {
-    transform: rotateX(-30deg);
-    background: linear-gradient(to bottom right, #1afbf0, #da00ff);
-  }
-
-  .pyramid-loader .wrapper .shadow {
-    width: 60px;
-    height: 60px;
-    background: #8b5ad5;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    margin: auto;
-    transform: rotateX(90deg) translateZ(-40px);
-    filter: blur(12px);
-  }`;
-
-export default Loader;
- */
