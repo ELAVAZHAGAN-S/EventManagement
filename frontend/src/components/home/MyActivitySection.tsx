@@ -45,27 +45,25 @@ const MyActivitySection = () => {
     const confirmedBookings = bookings.filter(b => b.status === 'CONFIRMED');
 
     if (!localStorage.getItem('token')) {
-        return null; // Don't show for non-logged in users
+        return null;
     }
 
     return (
         <div className="py-8">
-            {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
-                    <div className="w-1 h-6 bg-linear-to-b from-violet-500 to-blue-500 rounded-full" />
+                    <div className="w-1 h-6 bg-linear-to-b from-amber-200 to-amber-100 rounded-full" />
                     <h2 className="text-xl font-bold text-slate-100">My Activity</h2>
                 </div>
                 <Link
                     to="/my-bookings"
-                    className="flex items-center gap-1 text-sm font-medium text-violet-400 hover:text-violet-300 transition-colors group"
+                    className="flex items-center gap-1 text-sm font-medium text-amber-200 hover:text-amber-100 transition-colors group"
                 >
                     View All
                     <HiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
             </div>
 
-            {/* Tabs */}
             <div className="flex gap-2 mb-6">
                 {tabs.map((tab) => (
                     <button
@@ -81,10 +79,9 @@ const MyActivitySection = () => {
                 ))}
             </div>
 
-            {/* Content */}
             {loading ? (
                 <div className="glass-card p-8 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-violet-500 mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-100 mx-auto"></div>
                 </div>
             ) : activeTab === 'registrations' ? (
                 <div className="overflow-x-auto pb-4">
@@ -94,10 +91,10 @@ const MyActivitySection = () => {
                                 <Link
                                     key={booking.bookingId}
                                     to={`/events/${booking.eventId}`}
-                                    className="shrink-0 w-72 glass-card p-4 flex items-center gap-4 
-                                        hover:border-violet-500/50 transition-all group"
+                                    className="shrink-0 w-72 glass-card py-4 px-6 flex items-center gap-4 
+                                        hover:border-amber-500/50 transition-all group"
                                 >
-                                    <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0">
+                                    <div className="w-16 h-16 border border-amber-100 rounded-full overflow-hidden shrink-0">
                                         <img
                                             src={getImageUrl(booking.eventBannerImageId)}
                                             alt={booking.eventTitle}
@@ -105,7 +102,7 @@ const MyActivitySection = () => {
                                         />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="font-semibold text-slate-100 truncate group-hover:text-violet-300 transition-colors">
+                                        <h4 className="font-semibold text-slate-100 truncate group-hover:text-amber-100 transition-colors">
                                             {booking.eventTitle}
                                         </h4>
                                         <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
@@ -121,7 +118,7 @@ const MyActivitySection = () => {
                             <div className="glass-card p-8 w-full text-center">
                                 <HiTicket className="w-10 h-10 mx-auto text-slate-600 mb-3" />
                                 <p className="text-slate-400">No registrations yet</p>
-                                <Link to="/home" className="text-violet-400 text-sm hover:text-violet-300 mt-2 inline-block">
+                                <Link to="/home" className="text-amber-100 text-sm hover:text-amber-300 mt-2 inline-block">
                                     Browse events →
                                 </Link>
                             </div>

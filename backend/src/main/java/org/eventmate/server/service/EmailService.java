@@ -4,12 +4,18 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import java.util.Map;
 
 @Service
@@ -92,6 +98,37 @@ public class EmailService {
             log.info("Reminder email sent to {}", to);
         } catch (MessagingException e) {
             log.error("Failed to send reminder email to {}", to, e);
+        }
+    }
+
+    public byte[] generateTicketPdf(Map<String, Object> templateModel) {
+        try {
+            Context context = new Context();
+            context.setVariables(templateModel);
+
+            String htmlContent = templateEngine.process("ticket-confirmation", context);
+
+            RestTemplate restTemplate = new RestTemplate();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.TEXT_PLAIN);
+
+            HttpEntity<String> request = new HttpEntity<>(htmlContent, headers);
+
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    "http://localhost:3001/generate-pdf",
+                    HttpMethod.POST,
+                    request,
+                    byte[].class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                return response.getBody();
+            } else {
+                throw new RuntimeException("Failed to generate PDF");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException("PDF generation failed", e);
         }
     }
 }

@@ -113,21 +113,15 @@ const VerifyOTP = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            {/* Background decorations */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="glass-card max-w-md w-full p-8 relative">
+            <div className="glass-card max-w-md w-full py-12 px-8 relative">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-3">
-                        <HiSparkles className="w-8 h-8 text-violet-400 float-animation" />
+                        <HiSparkles className="w-15 h-15 px-3 py-3 border-2 border-amber-200 rounded-full text-amber-200 float-animation" />
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gradient mb-2">EventMate</h2>
-                    <h1 className="text-slate-300 font-medium">Verify OTP</h1>
-                    <p className="text-sm text-slate-500 mt-2">
-                        Enter the 6-digit code sent to <span className="text-violet-400">{email}</span>
+                    <h2 className="text-sm font-extrabold text-amber-200 mb-2">EventMate 2.0</h2>
+                    <h1 className="text-white font-medium">Verify OTP</h1>
+                    <p className="text-sm text-white mt-2">
+                        Enter the 6-digit code sent to your mail (<span className="text-amber-200">{email}</span>)
                     </p>
                 </div>
 
@@ -144,9 +138,9 @@ const VerifyOTP = () => {
                                     onChange={(e) => handleChange(index, e.target.value)}
                                     onKeyDown={(e) => handleKeyDown(index, e)}
                                     onPaste={handlePaste}
-                                    className={`w-12 h-14 text-center text-2xl font-bold bg-white/5 border rounded-xl text-slate-100 focus:ring-2 outline-none transition-all ${error
+                                    className={`w-12 h-14 text-center text-2xl font-bold bg-white/5 border rounded-xl text-white focus:ring-2 outline-none transition-all ${error
                                             ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30'
-                                            : 'border-white/20 focus:border-violet-500 focus:ring-violet-500/30'
+                                            : 'border-white focus:border-amber-200 focus:ring-amber-100/30'
                                         }`}
                                 />
                             ))}
@@ -161,7 +155,7 @@ const VerifyOTP = () => {
 
                     <div className="text-center">
                         <span className="text-sm text-slate-400">Time Remaining: </span>
-                        <span className={`text-sm font-bold ${timeLeft < 60 ? 'text-red-400' : 'text-violet-400'}`}>
+                        <span className={`text-sm font-bold ${timeLeft < 60 ? 'text-red-400' : 'text-amber-200'}`}>
                             {formatTime(timeLeft)}
                         </span>
                     </div>
@@ -169,8 +163,8 @@ const VerifyOTP = () => {
                     <button
                         type="submit"
                         disabled={isLoading || !isComplete}
-                        className="btn-glow w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                        className="btn2">
+                        <span className="spn2">
                         {isLoading ? (
                             <span className="flex items-center justify-center gap-2">
                                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -181,7 +175,7 @@ const VerifyOTP = () => {
                             </span>
                         ) : (
                             'Verify OTP'
-                        )}
+                        )}</span>
                     </button>
                 </form>
             </div>

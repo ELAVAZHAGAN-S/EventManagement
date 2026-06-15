@@ -21,7 +21,7 @@ const CreateEditEvent = () => {
     const navigate = useNavigate();
     const isEditMode = !!id;
     const [loading, setLoading] = useState(false);
-    const [bookedVenues, setBookedVenues] = useState<any[]>([]);
+    const [venues, setVenues] = useState<any[]>([])
     const [ticketTiers, setTicketTiers] = useState<TicketTier[]>([
         {
             name: "",
@@ -123,7 +123,6 @@ const CreateEditEvent = () => {
         }
     }, [watchAllowCoupon])
 
-    // Determine if Launch is allowed
     const isLaunchAllowed = () => {
         if ((watchEventFormat === 'ONSITE' || watchEventFormat === 'HYBRID') && !watchVenueId) {
             return false;
@@ -138,23 +137,17 @@ const CreateEditEvent = () => {
         if (isEditMode) {
             loadEventData();
         }
-        loadBookedVenues();
+        loadVenues();
     }, [id]);
 
-    const loadBookedVenues = async () => {
+    const loadVenues = async () => {
         try {
-            const bookings = await orgService.getMyVenueBookings();
-            const uniqueVenues = bookings.reduce((acc: any[], booking: any) => {
-                if (!acc.find((v: any) => v.venueId === booking.venueId)) {
-                    acc.push(booking);
-                }
-                return acc;
-            }, []);
-            setBookedVenues(uniqueVenues);
-        } catch (error) {
-            console.error('Failed to load booked venues', error);
+            const res = await orgService.getAllVenues()
+            setVenues(res)
+        } catch {
+            toast.error("Failed to load venues")
         }
-    };
+    }
 
     const loadEventData = async () => {
         if (!id) return;
@@ -165,7 +158,6 @@ const CreateEditEvent = () => {
                 setTicketTiers(data.ticketTiers)
             }
 
-            // Helper to format ISO date to datetime-local format (YYYY-MM-DDTHH:mm)
             const formatDateForInput = (dateString: string | null | undefined) => {
                 if (!dateString) return '';
                 const date = new Date(dateString);
@@ -239,18 +231,29 @@ const CreateEditEvent = () => {
                 ticketTiers: ticketTiers
             };
 
+            let createdEvent;
+
             if (isEditMode && id) {
-                await orgService.updateEvent(id, payload);
-                toast.success(data.status === 'ACTIVE' ? 'Event Launched Successfully!' : 'Event updated successfully');
+            await orgService.updateEvent(id, payload);
+            toast.success(data.status === 'ACTIVE' ? 'Event Launched Successfully!' : 'Event updated successfully');
             } else {
-                await orgService.createEvent(payload);
-                toast.success('Event Draft Created!');
+            createdEvent = await orgService.createEvent(payload);
+
+            if (payload.venueId) {
+                await orgService.bookVenue({
+                    venueId: payload.venueId,
+                    eventId: createdEvent.eventId,
+                    bookingStartDate: payload.startDate,
+                    bookingEndDate: payload.endDate
+                });
+            }
+
+            toast.success('Event + Venue booked successfully!');
             }
             navigate('/org/events');
         } catch (error: any) {
             console.error('Failed to save event', error);
 
-            // Handle backend validation errors with detailed messages
             if (error.response?.data?.details) {
                 const details = error.response.data.details;
                 if (typeof details === 'object') {
@@ -278,30 +281,27 @@ const CreateEditEvent = () => {
     return (
         <FormProvider {...methods}>
             <div className="max-w-4xl mx-auto space-y-6 pb-12">
-                <button onClick={() => navigate('/org/events')} className="flex items-center text-gray-500 hover:text-gray-700 transition-colors">
+                <button onClick={() => navigate('/org/events')} className="flex items-center text-gray-400 hover:text-gray-700 transition-colors">
                     <ArrowLeft size={20} className="mr-2" />
                     Back to Events
                 </button>
 
                 <div className="glass-card overflow-hidden">
-                    <div className="p-6 border-b border-white/10 bg-white/5 flex justify-between items-center">
-                        <h1 className="text-2xl font-bold text-slate-100">{isEditMode ? 'Edit Event' : 'Create New Event'}</h1>
+                    <div className="py-8 px-12 border-b border-white/10 flex justify-between items-center">
+                        <h1 className="text-2xl font-bold text-white">{isEditMode ? 'Edit Event' : 'Create New Event'}</h1>
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${watchStatus === 'ACTIVE' ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-slate-300'}`}>
                             {watchStatus === 'ACTIVE' ? 'PUBLISHED' : 'DRAFT'}
                         </span>
                     </div>
 
-                    <form className="p-8 space-y-12">
-
-                        {/* 1. Banner */}
+                    <form className="py-8 px-12 space-y-12">
                         <section className="space-y-4">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">1. Banner Image</h3>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/20 pb-2">1. Banner Image</h3>
                             <BannerUpload />
                         </section>
 
-                        {/* 2. Basic Info + Description */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">2. Event Details</h3>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/20 pb-2">2. Event Details</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="md:col-span-2">
                                     <CommonTextField name="title" label="Event Title" required placeholder="e.g. Annual Tech Summit 2025" />
@@ -310,23 +310,21 @@ const CreateEditEvent = () => {
                                     <CommonTextField name="tagline" label="Tagline" placeholder="Short catchy phrase" />
                                 </div>
                                 <div className="md:col-span-1">
-                                    <label className="block text-sm font-medium text-slate-300 mb-1">Event Type</label>
+                                    <label className="block text-sm font-medium text-amber-200 mb-1">Event Type</label>
                                     <EventTypeSelector />
                                 </div>
                                 <div className="md:col-span-2">
-                                    <CommonTextField name="description" label="Description" type="textarea" required />
+                                    <CommonTextField name="description" placeholder="Enter event description" label="Description" type="textarea" required />
                                 </div>
                             </div>
 
-                            {/* Dynamic Fields based on Type */}
-                            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                            <div className="bg-white/5 p-6 rounded-4xl border border-white/10">
                                 <DynamicCategoryForm type={watch('eventType')} />
                             </div>
                         </section>
 
-                        {/* 3. Guests */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">3. Guests / Speakers</h3>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/20 pb-2">3. Guests / Speakers</h3>
                             <div className="flex flex-wrap gap-4 items-center">
                                 {watchGuests.map((guest: any, idx: number) => (
                                     <div key={idx} className="relative group">
@@ -363,22 +361,19 @@ const CreateEditEvent = () => {
 
                         </section>
 
-                        {/* 4. Target & Outcomes */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">4. Audience & Outcomes</h3>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/20 pb-2">4. Audience & Outcomes</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <CommonTextField name="targetAudience" label="Target Audience" placeholder="e.g. Software Developers, Students" />
                                 <CommonTextField name="eventGoals" label="What to expect? (Outcomes)" placeholder="e.g. Learn AI trends, Networking" />
                             </div>
                         </section>
 
-                        {/* 5. Site & Logistics */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">5. Venue & Schedule</h3>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/20 pb-2">5. Venue & Schedule</h3>
 
-                            {/* Format Selection */}
                             <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-2">Event Format</label>
+                                <label className="block text-sm font-medium text-amber-200 mb-2">Event Format</label>
                                 <div className="flex gap-4">
                                     {['ONSITE', 'HYBRID', 'REMOTE'].map(fmt => (
                                         <label key={fmt} className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors
@@ -390,16 +385,15 @@ const CreateEditEvent = () => {
                                 </div>
                             </div>
 
-                            {/* Conditional Venue/Link */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in">
                                 {(watchEventFormat === 'ONSITE' || watchEventFormat === 'HYBRID') && (
-                                    <div className="p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
-                                        <label className="block text-sm font-medium text-orange-300 mb-1">Select Booked Venue</label>
-                                        <select {...register('venueId')} className="w-full px-4 py-2 border border-orange-500/30 rounded-lg focus:ring-2 focus:ring-orange-500 bg-[#0f172a] text-slate-200">
-                                            <option value="">-- Select from your bookings --</option>
-                                            {bookedVenues.map((booking: any) => (
-                                                <option key={booking.venueId} value={booking.venueId}>
-                                                    {booking.venueName} (Booked: {new Date(booking.bookingDate).toLocaleDateString()})
+                                    <div className="p-4">
+                                        <label className="block text-sm font-medium text-amber-200 mb-1">Select Booked Venue</label>
+                                        <select {...register('venueId')} className="w-full px-4 py-2 glass-input appearance-none">
+                                            <option value=""> Select Venue</option>
+                                            {venues.map((v: any) => (
+                                                <option key={v.venueId} value={v.venueId}>
+                                                    {v.name} ({v.city})
                                                 </option>
                                             ))}
                                         </select>
@@ -407,57 +401,52 @@ const CreateEditEvent = () => {
                                 )}
 
                                 {(watchEventFormat === 'REMOTE' || watchEventFormat === 'HYBRID') && (
-                                    <div className="p-4 bg-violet-500/10 border border-violet-500/30 rounded-lg">
+                                    <div className="p-4">
                                         <CommonTextField name="meetingUrl" label="Webinar / Meeting URL" placeholder="https://zoom.us/..." />
                                     </div>
                                 )}
                             </div>
 
-                            {/* Dates */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <CommonTextField name="startDate" label="Start Date & Time" type="datetime-local" />
-                                <CommonTextField name="endDate" label="End Date & Time" type="datetime-local" />
                                 <CommonTextField name="registrationOpenDate" label="Reg. Open Date" type="datetime-local" />
                                 <CommonTextField name="registrationCloseDate" label="Reg. Close Date" type="datetime-local" />
+                                <CommonTextField name="startDate" label="Event Start Date & Time" type="datetime-local" />
+                                <CommonTextField name="endDate" label="Event End Date & Time" type="datetime-local" />
                             </div>
                         </section>
 
-                        {/* 6. Tickets & Pricing */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">6. Tickets & Pricing</h3>
-
-                            <div className="space-y-4">
-
-                                <div className="w-full md:w-1/3 animate-in fade-in">
-                                    <label className="block text-sm font-medium text-slate-300 mb-1">Ticket Price (₹)</label>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/10 pb-2">6. Tickets & Pricing</h3>
+                            <div className="flex items-center gap-4">
+                                <div className="w-full animate-in fade-in">
+                                    <label className="block text-sm font-medium text-amber-200 mb-1">Ticket Price (₹)</label>
                                     <input
                                         type="number"
                                         {...register('ticketPrice')}
                                         className="glass-input w-full"
                                     />
                                 </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4 pt-4">
-                                    <CommonTextField name="totalCapacity" label="Total Seat Capacity" type="number" />
+                                <div className="w-full">
+                                    <CommonTextField name="totalCapacity" placeholder="0" label="Total Seat Capacity" type="number" />
                                 </div>
                             </div>
                         </section>
 
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/10 pb-2">
                                 Ticket Types
                             </h3>
 
                             {ticketTiers.map((tier, index) => (
                                 <div
                                     key={index}
-                                    className="p-6 bg-white/5 border border-white/10 rounded-xl space-y-4 animate-in fade-in"
+                                    className="p-6 bg-white/5 border border-white/10 rounded-4xl space-y-4 animate-in fade-in"
                                 >
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-amber-200 mb-1">
                                                 Ticket Name
                                             </label>
                                             <input
@@ -472,7 +461,7 @@ const CreateEditEvent = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-amber-200 mb-1">
                                                 Price (₹)
                                             </label>
                                             <input
@@ -487,7 +476,7 @@ const CreateEditEvent = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-slate-300 mb-1">
+                                            <label className="block text-sm font-medium text-amber-200 mb-1">
                                                 Capacity
                                             </label>
                                             <input
@@ -504,7 +493,7 @@ const CreateEditEvent = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-slate-300 mb-1">
+                                        <label className="block text-sm font-medium text-amber-200 mb-1">
                                             Description
                                         </label>
                                         <input
@@ -522,7 +511,7 @@ const CreateEditEvent = () => {
                                         <button
                                             type="button"
                                             onClick={() => removeTicketTier(index)}
-                                            className="text-red-400 hover:text-red-500 text-sm font-medium transition-colors"
+                                            className="pt-3 px-5 cursor-pointer text-red-400 hover:text-red-500 text-sm font-medium transition-colors"
                                         >
                                             Remove Ticket Type
                                         </button>
@@ -533,57 +522,52 @@ const CreateEditEvent = () => {
                             <button
                                 type="button"
                                 onClick={addTicketTier}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium shadow-md transition-all bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                            >
-                                <Plus size={16} />
-                                Add Ticket Type
+                                className="btn2 w-72! ">
+                                <span className="spn2 flex items-center justify-center gap-4 text-center">
+                                    <Plus size={16} />
+                                    Add Ticket Type
+                                </span>
                             </button>
                         </section>
 
-                        {/* 7. Discounts */}
                         <section className="space-y-6">
-                            <h3 className="text-xl font-bold text-slate-100 border-b border-white/10 pb-2">7. Discounts & Coupons</h3>
-                            <div className="space-y-4">
-                                <label className="flex items-center gap-3 p-4 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-                                    <input type="checkbox" {...register('allowCoupon')} className="w-5 h-5 text-blue-600 rounded" />
-                                    <div>
-                                        <span className="font-bold text-slate-200">Allow Coupon Code</span>
-                                        <p className="text-xs text-slate-400">Enable promotional codes for ticket discounts</p>
-                                    </div>
-                                </label>
+                            <h3 className="text-xl font-bold text-amber-200 border-b border-white/10 pb-2">7. Discounts & Coupons</h3>
+                            <div className="flex flex-col items-center justify-center gap-6">
+                                <div className="flex items-center gap-4">
+                                    <label className="flex items-center gap-3 py-4 px-6 border border-white/10 rounded-4xl hover:bg-white/5 cursor-pointer transition-colors">
+                                        <input type="checkbox" {...register('allowCoupon')} className="w-5 h-5 text-amber-200 rounded" />
+                                        <div>
+                                            <span className="font-bold text-amber-200">Allow Coupon Code</span>
+                                            <p className="text-xs text-slate-400">Enable promotional codes for ticket discounts</p>
+                                        </div>
+                                    </label>
 
+                                    <label className="flex items-center gap-3 py-4 px-6 border border-white/10 rounded-4xl hover:bg-white/5 cursor-pointer transition-colors">
+                                        <input type="checkbox" {...register('allowMembershipDiscount')} className="w-5 h-5 text-amber-200 rounded" />
+                                        <div>
+                                            <span className="font-bold text-amber-200">Membership Discount</span>
+                                            <p className="text-xs text-slate-400">Apply automated discount for premium members (Set by Admin)</p>
+                                        </div>
+                                    </label>
+                                </div>
                                 {watchAllowCoupon && (
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pl-8 animate-in fade-in">
-
+                                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 pl-8 animate-in fade-in bg-white/5 p-6 rounded-4xl border border-white/10">
                                         <CommonTextField
                                             name="couponCount"
                                             label="Number of Coupons"
                                             type="number"
                                             placeholder="e.g. 50"
                                         />
-
                                         <CommonTextField
                                             name="discountPercentage"
                                             label="Discount Percentage (%)"
                                             type="number"
                                         />
-
                                     </div>
-
                                 )}
-
-                                <label className="flex items-center gap-3 p-4 border border-white/10 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
-                                    <input type="checkbox" {...register('allowMembershipDiscount')} className="w-5 h-5 text-blue-600 rounded" />
-                                    <div>
-                                        <span className="font-bold text-slate-200">Membership Discount</span>
-                                        <p className="text-xs text-slate-400">Apply automated discount for premium members (Set by Admin)</p>
-                                    </div>
-                                </label>
                             </div>
                         </section>
 
-                        {/* Footer Actions */}
                         <div className="flex justify-end gap-4 sticky bottom-0 pt-2 py-4 z-10">
                             <button type="button" onClick={() => navigate('/org/events')} className="px-6 py-2.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-lg font-medium transition-colors">
                                 Cancel
@@ -591,7 +575,7 @@ const CreateEditEvent = () => {
                             <button type="button" onClick={handleSubmit((data) => onSubmit(data, 'PLANNED'), (errors) => {
                                 const firstError = Object.values(errors)[0];
                                 if (firstError) toast.error((firstError as any).message || 'Please fill in required fields');
-                            })} className="px-6 py-2.5 rounded-lg text-slate-300 font-bold border border-white/20 hover:bg-white/10 shadow-sm transition-all">
+                            })} className="px-6 py-2.5 rounded-lg text-slate-300 font-bold border border-white/20 hover:bg-amber-200 hover:text-black shadow-sm transition-all cursor-pointer">
                                 Save Draft
                             </button>
                             {isLaunchAllowed() && (

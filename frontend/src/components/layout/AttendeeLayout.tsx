@@ -11,7 +11,6 @@ const AttendeeLayout = ({ children }: AttendeeLayoutProps) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const location = useLocation();
 
-    // Close mobile menu when route changes
     useEffect(() => {
         setIsMobileMenuOpen(false);
     }, [location.pathname]);

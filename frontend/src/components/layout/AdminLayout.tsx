@@ -35,13 +35,12 @@ const AdminLayout = () => {
                     onMouseLeave={() => setIsHovered(false)}
                     className={`
                         glass fixed left-0 top-0 h-full
-                        flex flex-col z-1
+                        flex flex-col z-1 border-transparent! border-r-amber-100!
                         transition-all duration-300 ease-out
                         ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
                     `}
                 >
-
-                    {/* Navigation */}
+                    
                     <nav className="flex-1 mt-[55px] p-3 space-y-2">
                         {adminNavItems.map((item) => {
                             const Icon = item.icon;
@@ -51,12 +50,12 @@ const AdminLayout = () => {
                                     to={item.path}
                                     end={item.exact}
                                     className={({ isActive }) => `
-                                    nav-item group
+                                    nav-item group text-amber-50
                                     ${isActive ? 'active' : ''}
                                 `}
                                 >
                                     <Icon className="nav-icon w-6 h-6 shrink-0" />
-                                    <span className={`nav-label text-amber-50 font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0 ml-3' : 'opacity-0 -translate-x-2 ml-0'}`}>
+                                    <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0 ml-3' : 'opacity-0 -translate-x-2 ml-0'}`}>
                                         {item.label}
                                     </span>
                                 </NavLink>
@@ -64,11 +63,10 @@ const AdminLayout = () => {
                         })}
                     </nav>
 
-                    {/* Logout */}
                     <div className="p-3 border-t border-white/10">
                         <button
                             onClick={handleLogout}
-                            className="nav-item w-full text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                            className="nav-item w-full text-slate-400! hover:text-white! hover:bg-red-500!"
                         >
                             <HiArrowRightOnRectangle className="nav-icon w-6 h-6 shrink-0" />
                             <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>

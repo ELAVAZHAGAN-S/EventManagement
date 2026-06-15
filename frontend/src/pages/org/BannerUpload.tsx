@@ -10,7 +10,6 @@ const BannerUpload = () => {
     const bannerImageId = watch('bannerImageId');
     const [uploading, setUploading] = useState(false);
 
-    // Helper to get full URL from ID
     const getImageUrl = (id: string) => {
         if (!id) return '';
         if (id.startsWith('http')) return id;
@@ -26,7 +25,6 @@ const BannerUpload = () => {
         formData.append('file', file);
 
         try {
-            // Direct call if service wrapper not ready
             const token = localStorage.getItem('token');
             const res = await axios.post(`${API_BASE_URL}/files/upload`, formData, {
                 headers: {
@@ -35,8 +33,6 @@ const BannerUpload = () => {
                 }
             });
 
-            // Extract ID from URL response or raw ID
-            // The controller returns full URL: "${API_BASE_URL}/files/{id}"
             const fullUrl = res.data;
             const id = fullUrl.split('/').pop();
 
@@ -74,7 +70,7 @@ const BannerUpload = () => {
                     </button>
                 </div>
             ) : (
-                <div className="w-full h-32 border-2 border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center text-white/50 hover:border-purple-500/50 hover:bg-purple-500/10 transition-colors cursor-pointer relative">
+                <div className="w-full h-44 border-2 border-dashed border-white/20 rounded-xl flex flex-col items-center justify-center text-white/50 hover:border-amber-200 hover:bg-amber-200/10 transition-colors cursor-pointer relative">
                     <input
                         type="file"
                         accept="image/*"
@@ -83,10 +79,10 @@ const BannerUpload = () => {
                         disabled={uploading}
                     />
                     {uploading ? (
-                        <div className="animate-pulse text-purple-400">Uploading...</div>
+                        <div className="animate-pulse text-amber-200">Uploading...</div>
                     ) : (
                         <>
-                            <Upload size={24} className="mb-2 text-purple-400" />
+                            <Upload size={24} className="mb-2 text-amber-200" />
                             <span className="text-sm text-slate-400">Click to upload banner image</span>
                         </>
                     )}

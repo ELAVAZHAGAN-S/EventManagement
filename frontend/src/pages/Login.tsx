@@ -130,27 +130,18 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="glass-card max-w-md w-full p-8 relative">
-        {/* Header */}
-        <div className="text-center mb-8">
+      <div className="glass-card max-w-md w-full py-12 px-8 relative">
+        <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <HiSparkles className="w-8 h-8 text-violet-400 float-animation" />
+            <HiSparkles className="w-15 h-15 px-3 py-3 border-2 border-amber-200 rounded-full text-amber-200 float-animation" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gradient mb-2">EventMate</h2>
-          <p className="text-slate-400">Welcome back! Let's get you in.</p>
+          <h2 className="text-sm font-extrabold text-amber-200 mb-2">EventMate 2.0</h2>
+          <p className="text-white text-sm">Welcome back! Let's get you in to your events.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Email Address
               <span className="text-red-400 ml-1">*</span>
             </label>
@@ -165,10 +156,8 @@ const Login = () => {
             />
             <FieldError error={touched.email ? errors.email : undefined} />
           </div>
-
-          {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Password
               <span className="text-red-400 ml-1">*</span>
             </label>
@@ -185,7 +174,7 @@ const Login = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-violet-400 transition-colors"
+                className="absolute inset-y-0 right-3 flex items-center justify-center text-white hover:text-amber-100 cursor-pointer transition-colors"
               >
                 {showPassword ? (
                   <HiEyeSlash className="w-5 h-5" />
@@ -198,17 +187,14 @@ const Login = () => {
           </div>
 
           <div className="flex justify-end">
-            <Link to="/forgot-password" className="text-sm text-violet-400 hover:text-violet-300 transition-colors">
+            <Link to="/forgot-password" className="text-sm text-amber-200! hover:text-amber-100! hover:border-b hover:border-amber-200 transition-colors">
               Forgot Password?
             </Link>
           </div>
 
-          <button
-            type="submit"
-            className="btn-glow w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={loading}
-          >
-            {loading ? (
+
+          <button className="btn2" type='submit' disabled={loading}>
+            <span className="spn2">{loading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -218,13 +204,14 @@ const Login = () => {
               </span>
             ) : (
               'Login'
-            )}
+            )}</span>
           </button>
+
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-400">
+        <div className="mt-6 text-center text-sm text-white">
           Don't have an account?{' '}
-          <Link to="/register" className="text-violet-400 font-semibold hover:text-violet-300 transition-colors">
+          <Link to="/register" className="text-amber-200! font-semibold hover:text-amber-100! hover:border-b hover:border-amber-200 transition-colors">
             Sign up
           </Link>
         </div>
