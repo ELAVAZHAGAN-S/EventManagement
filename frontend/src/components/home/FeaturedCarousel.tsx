@@ -5,7 +5,7 @@ import { eventService } from '../../services/api';
 import type { Event } from '../../types/events';
 import { getImageUrl } from '../../config';
 
-const AUTO_SCROLL_INTERVAL = 4000; // 4 seconds
+const AUTO_SCROLL_INTERVAL = 4000;
 
 const FeaturedCarousel = () => {
     const [events, setEvents] = useState<Event[]>([]);
@@ -14,7 +14,6 @@ const FeaturedCarousel = () => {
     const [loading, setLoading] = useState(true);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-    // Fetch featured events
     useEffect(() => {
         const fetchFeatured = async () => {
             try {
@@ -29,7 +28,6 @@ const FeaturedCarousel = () => {
         fetchFeatured();
     }, []);
 
-    // Clear existing timer
     const clearTimer = useCallback(() => {
         if (timerRef.current) {
             clearInterval(timerRef.current);
@@ -37,7 +35,6 @@ const FeaturedCarousel = () => {
         }
     }, []);
 
-    // Start auto-scroll timer
     const startTimer = useCallback(() => {
         clearTimer();
         if (events.length > 1 && !isPaused) {
@@ -47,34 +44,26 @@ const FeaturedCarousel = () => {
         }
     }, [events.length, isPaused, clearTimer]);
 
-    // Auto-scroll effect
     useEffect(() => {
         startTimer();
         return () => clearTimer();
     }, [startTimer, clearTimer]);
 
-    // Go to previous slide
     const handlePrev = () => {
         setCurrentIndex((prev) => (prev - 1 + events.length) % events.length);
-        // Reset timer when manually navigating
         startTimer();
     };
 
-    // Go to next slide
     const handleNext = () => {
         setCurrentIndex((prev) => (prev + 1) % events.length);
-        // Reset timer when manually navigating
         startTimer();
     };
 
-    // Go to specific slide
     const handleDotClick = (index: number) => {
         setCurrentIndex(index);
-        // Reset timer when manually navigating
         startTimer();
     };
 
-    // Pause/resume on hover
     const handleMouseEnter = () => {
         setIsPaused(true);
         clearTimer();
@@ -88,7 +77,7 @@ const FeaturedCarousel = () => {
     if (loading) {
         return (
             <div className="glass-card h-64 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-violet-500"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-amber-100"></div>
             </div>
         );
     }
@@ -96,7 +85,7 @@ const FeaturedCarousel = () => {
     if (events.length === 0) {
         return (
             <div className="glass-card p-8 text-center">
-                <HiSparkles className="w-12 h-12 mx-auto text-violet-400 mb-3" />
+                <HiSparkles className="w-12 h-12 mx-auto text-amber-100 mb-3" />
                 <p className="text-slate-400">No featured events yet</p>
             </div>
         );
@@ -108,7 +97,6 @@ const FeaturedCarousel = () => {
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
-            {/* Carousel Container */}
             <div className="overflow-hidden rounded-2xl">
                 <div
                     className="flex transition-transform duration-500 ease-out"
@@ -118,7 +106,7 @@ const FeaturedCarousel = () => {
                         <Link
                             key={event.eventId}
                             to={`/events/${event.eventId}`}
-                            className="w-full flex-shrink-0"
+                            className="w-full shrink-0"
                         >
                             <div className="relative h-72 md:h-96 overflow-hidden">
                                 <img
@@ -126,12 +114,10 @@ const FeaturedCarousel = () => {
                                     alt={event.title}
                                     className="w-full h-full object-cover"
                                 />
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent" />
 
-                                {/* Content */}
                                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                                    <span className="inline-block px-3 py-1 bg-violet-500/80 text-white text-xs font-semibold rounded-full mb-3">
+                                    <span className="inline-block px-3 py-1 bg-amber-200/80 text-black text-xs font-semibold rounded-full mb-3">
                                         {event.eventType?.replace('_', ' ') || 'EVENT'}
                                     </span>
                                     <h3 className="text-xl md:text-2xl font-bold text-white mb-2 line-clamp-2">
@@ -149,11 +135,10 @@ const FeaturedCarousel = () => {
                 </div>
             </div>
 
-            {/* Progress Bar */}
             {events.length > 1 && !isPaused && (
                 <div className="absolute top-0 left-0 right-0 h-1 bg-white/10">
                     <div
-                        className="h-full bg-gradient-to-r from-violet-500 to-blue-500 transition-all"
+                        className="h-full bg-linear-to-r from-amber-500 to-orange-500 transition-all"
                         style={{
                             animation: `progressBar ${AUTO_SCROLL_INTERVAL}ms linear infinite`,
                         }}
@@ -161,7 +146,6 @@ const FeaturedCarousel = () => {
                 </div>
             )}
 
-            {/* Navigation Arrows */}
             {events.length > 1 && (
                 <>
                     <button
@@ -183,7 +167,6 @@ const FeaturedCarousel = () => {
                 </>
             )}
 
-            {/* Dots Indicator */}
             {events.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
                     {events.map((_, idx) => (
@@ -191,7 +174,7 @@ const FeaturedCarousel = () => {
                             key={idx}
                             onClick={(e) => { e.preventDefault(); handleDotClick(idx); }}
                             className={`h-2 rounded-full transition-all duration-300 ${idx === currentIndex
-                                    ? 'bg-violet-500 w-6'
+                                    ? 'bg-amber-100 w-6'
                                     : 'bg-white/50 hover:bg-white/80 w-2'
                                 }`}
                         />
@@ -199,7 +182,6 @@ const FeaturedCarousel = () => {
                 </div>
             )}
 
-            {/* CSS Animation for progress bar */}
             <style>{`
                 @keyframes progressBar {
                     from { width: 0%; }

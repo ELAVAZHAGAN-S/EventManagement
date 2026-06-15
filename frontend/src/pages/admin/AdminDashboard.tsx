@@ -66,21 +66,19 @@ const AdminDashboard = () => {
 
     return (
         <div className="space-y-8">
-            {/* Header */}
             <div>
                 <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
-                    <HiSparkles className="w-6 h-6 text-violet-400" />
+                    <HiSparkles className="w-6 h-6 text-amber-200" />
                     Admin Dashboard
                 </h1>
                 <p className="text-slate-400 mt-1">Welcome back! Here's an overview of your platform.</p>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {statCards.map((stat) => {
                     const Icon = stat.icon;
                     return (
-                        <div key={stat.label} className="glass-card p-6">
+                        <div key={stat.label} className="glass-card py-6 px-10">
                             <div className="flex justify-between items-start">
                                 <div>
                                     <p className="text-sm font-medium text-slate-400">{stat.label}</p>
@@ -95,7 +93,6 @@ const AdminDashboard = () => {
                 })}
             </div>
 
-            {/* Quick Actions */}
             <div>
                 <h2 className="text-lg font-bold text-slate-100 mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

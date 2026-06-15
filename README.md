@@ -1,4 +1,4 @@
-# EventMate AI – Setup & Run Guide
+# EventMate 2.0 AI – Setup & Run Guide
 
 ## 📌 Project Overview
 
@@ -59,7 +59,7 @@ mongod --version
 
 ```
 git clone <REPO_URL>
-cd EventMateAI-main
+cd EventManagement
 ```
 
 ---

@@ -14,11 +14,19 @@ public class UserContextService {
     private final UserRepository userRepository;
     
     public Long getCurrentUserId() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof User) {
-            return ((User) auth.getPrincipal()).getUserId();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getPrincipal().equals("anonymousUser")) {
+            throw new RuntimeException("User not authenticated");
         }
-        throw new RuntimeException("User not authenticated");
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return user.getUserId();
     }
     
     public User getCurrentUser() {

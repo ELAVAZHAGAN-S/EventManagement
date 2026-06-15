@@ -6,7 +6,6 @@ import {
     HiUserGroup,
     HiChartBar,
     HiArrowRightOnRectangle,
-    HiSparkles
 } from 'react-icons/hi2';
 import { authService } from '../../services/api';
 import Navbar from './Navbar';
@@ -28,69 +27,55 @@ const AdminLayout = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] flex">
-            {/* Sidebar with hover expand */}
-            <aside
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className={`
-                    glass fixed left-0 top-0 h-full z-50 
-                    flex flex-col border-r border-white/10
-                    transition-all duration-300 ease-out
-                    ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
-                `}
-            >
-                {/* Logo */}
-                <div className="h-14 flex items-center justify-center border-b border-white/10 px-4">
-                    <NavLink to="/admin" className="flex items-center gap-2 overflow-hidden">
-                        <HiSparkles className="w-7 h-7 text-violet-500 flex-shrink-0" />
-                        <span className={`text-lg font-bold text-gradient whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 w-0'}`}>
-                            Admin Panel
-                        </span>
-                    </NavLink>
-                </div>
-
-                {/* Navigation */}
-                <nav className="flex-1 p-3 space-y-2">
-                    {adminNavItems.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <NavLink
-                                key={item.path}
-                                to={item.path}
-                                end={item.exact}
-                                className={({ isActive }) => `
-                                    nav-item group
+        <div className="min-h-screen bg-(--bg-primary) flex flex-col">
+            <Navbar homeLink="/admin" />
+            <div className="flex flex-1">
+                <aside
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                    className={`
+                        glass fixed left-0 top-0 h-full
+                        flex flex-col z-1 border-transparent! border-r-amber-100!
+                        transition-all duration-300 ease-out
+                        ${isHovered ? 'w-64 sidebar-hovered' : 'w-[72px]'}
+                    `}
+                >
+                    
+                    <nav className="flex-1 mt-[55px] p-3 space-y-2">
+                        {adminNavItems.map((item) => {
+                            const Icon = item.icon;
+                            return (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    end={item.exact}
+                                    className={({ isActive }) => `
+                                    nav-item group text-amber-50
                                     ${isActive ? 'active' : ''}
                                 `}
-                            >
-                                <Icon className="nav-icon w-6 h-6 flex-shrink-0" />
-                                <span className={`nav-label text-amber-50 font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0 ml-3' : 'opacity-0 -translate-x-2 ml-0'}`}>
-                                    {item.label}
-                                </span>
-                            </NavLink>
-                        );
-                    })}
-                </nav>
+                                >
+                                    <Icon className="nav-icon w-6 h-6 shrink-0" />
+                                    <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0 ml-3' : 'opacity-0 -translate-x-2 ml-0'}`}>
+                                        {item.label}
+                                    </span>
+                                </NavLink>
+                            );
+                        })}
+                    </nav>
 
-                {/* Logout */}
-                <div className="p-3 border-t border-white/10">
-                    <button
-                        onClick={handleLogout}
-                        className="nav-item w-full text-slate-400 hover:text-red-400 hover:bg-red-500/10"
-                    >
-                        <HiArrowRightOnRectangle className="nav-icon w-6 h-6 flex-shrink-0" />
-                        <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
-                            Logout
-                        </span>
-                    </button>
-                </div>
-            </aside>
-
-            {/* Main Content */}
-            <div className={`flex-1 transition-all duration-300 ${isHovered ? 'ml-64' : 'ml-[72px]'}`}>
-                <Navbar homeLink="/admin" />
-                <main className="p-6">
+                    <div className="p-3 border-t border-white/10">
+                        <button
+                            onClick={handleLogout}
+                            className="nav-item w-full text-slate-400! hover:text-white! hover:bg-red-500!"
+                        >
+                            <HiArrowRightOnRectangle className="nav-icon w-6 h-6 shrink-0" />
+                            <span className={`nav-label font-medium text-sm whitespace-nowrap transition-all duration-300 ${isHovered ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2'}`}>
+                                Logout
+                            </span>
+                        </button>
+                    </div>
+                </aside>
+                <main className="flex-1 w-[calc(100% - 100px)] z-0 ml-[75px]! p-6 overflow-x-hidden page-container">
                     <Outlet />
                 </main>
             </div>

@@ -244,7 +244,7 @@ setLoading(false)
     if (!error) return null;
     return (
       <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-        <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+        <HiExclamationCircle className="w-4 h-4 shrink-0" />
         <span>{error}</span>
       </div>
     );
@@ -257,30 +257,21 @@ setLoading(false)
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-8">
-      {/* Background decorations */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="glass-card max-w-md w-full p-8 relative">
-        {/* Header */}
+      <div className="glass-card max-w-md w-full py-12 px-8 relative">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-3">
-            <HiSparkles className="w-8 h-8 text-violet-400 float-animation" />
+            <HiSparkles className="w-15 h-15 px-3 py-3 border-2 border-amber-200 rounded-full text-amber-200 float-animation" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gradient">EventMate</h2>
-          <p className="text-slate-400 mt-2">Create your account</p>
+          <h2 className="text-sm font-extrabold text-amber-200 mb-2">EventMate 2.0</h2>
+          <p className="text-white mt-2">Create your account</p>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex p-1 rounded-xl bg-white/5 border border-white/10 mb-6">
+        <div className="flex p-1 rounded-xl bg-white/5 border border-white/20 mb-6">
           <button
             type="button"
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${role === 'USER'
-              ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
-              : 'text-slate-400 hover:text-slate-300'
+              ? 'bg-amber-200 text-black'
+              : 'text-white hover:text-slate-300'
               }`}
             onClick={() => handleTabSwitch('USER')}
           >
@@ -290,8 +281,8 @@ setLoading(false)
           <button
             type="button"
             className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${role === 'ORGANIZATION'
-              ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-500/25'
-              : 'text-slate-400 hover:text-slate-300'
+              ? 'bg-amber-200 text-black'
+              : 'text-white hover:text-slate-300'
               }`}
             onClick={() => handleTabSwitch('ORGANIZATION')}
           >
@@ -301,8 +292,8 @@ setLoading(false)
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               {role === 'ORGANIZATION' ? 'Company Name' : 'Full Name'}
               <span className="text-red-400 ml-1">*</span>
             </label>
@@ -318,8 +309,8 @@ setLoading(false)
             <FieldError error={touched.fullName ? errors.fullName : undefined} />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Email
               <span className="text-red-400 ml-1">*</span>
             </label>
@@ -335,11 +326,10 @@ setLoading(false)
             <FieldError error={touched.email ? errors.email : undefined} />
           </div>
 
-          {/* Phone Number - Optional */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Phone Number
-              <span className="text-slate-500 text-xs ml-2">(optional)</span>
+              <span className="text-red-400 ml-1">*</span>
             </label>
             <input
               type="tel"
@@ -353,9 +343,8 @@ setLoading(false)
             <FieldError error={touched.phoneNumber ? errors.phoneNumber : undefined} />
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Password
               <span className="text-red-400 ml-1">*</span>
               <span className="text-slate-500 text-xs ml-2">(min. 8 characters)</span>
@@ -373,7 +362,7 @@ setLoading(false)
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-violet-400 transition-colors"
+                className="absolute inset-y-0 right-3 flex items-center justify-center text-white hover:text-amber-100 cursor-pointer transition-colors"
               >
                 {showPassword ? <HiEyeSlash className="w-5 h-5" /> : <HiEye className="w-5 h-5" />}
               </button>
@@ -381,9 +370,8 @@ setLoading(false)
             <FieldError error={touched.password ? errors.password : undefined} />
           </div>
 
-          {/* Confirm Password */}
-          <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+          <div className="mb-10">
+            <label className="block text-sm font-medium text-amber-200 mb-2">
               Confirm Password
               <span className="text-red-400 ml-1">*</span>
             </label>
@@ -400,7 +388,7 @@ setLoading(false)
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-violet-400 transition-colors"
+                className="absolute inset-y-0 right-3 flex items-center justify-center text-white hover:text-amber-100 cursor-pointer transition-colors"
               >
                 {showConfirmPassword ? <HiEyeSlash className="w-5 h-5" /> : <HiEye className="w-5 h-5" />}
               </button>
@@ -408,11 +396,8 @@ setLoading(false)
             <FieldError error={touched.confirmPassword ? errors.confirmPassword : undefined} />
           </div>
 
-          <button
-            type="submit"
-            className="btn-glow w-full py-3 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={loading}
-          >
+          <button className="btn2" type='submit' disabled={loading}>
+            <span className="spn2">
             {loading ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -423,13 +408,13 @@ setLoading(false)
               </span>
             ) : (
               role === 'ORGANIZATION' ? 'Register Company' : 'Sign Up Free'
-            )}
+            )}</span>
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm text-slate-400">
+        <div className="mt-6 text-center text-sm text-white">
           Already have an account?{' '}
-          <Link to="/login" className="text-violet-400 font-semibold hover:text-violet-300 transition-colors">
+          <Link to="/login" className="text-amber-200! font-semibold hover:text-amber-100! hover:border-b hover:border-amber-200 transition-colors">
             Log in
           </Link>
         </div>

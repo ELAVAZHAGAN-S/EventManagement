@@ -56,7 +56,7 @@ const OrgEvents = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-200">Loading...</div>
             </div>
         );
     }
@@ -67,28 +67,26 @@ const OrgEvents = () => {
                 <h1 className="text-2xl font-bold text-slate-100">My Events</h1>
                 <Link
                     to="/org/events/new"
-                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 !text-white rounded-lg transition-all shadow-lg hover:shadow-blue-500/25"
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-200 hover:bg-amber-100 text-black! rounded-lg transition-all shadow-lg"
                 >
                     <Plus size={20} />
                     Create Event
                 </Link>
             </div>
 
-            {/* Search and Filter */}
-            <div className="glass-card p-4">
+            <div className="glass-card py-4 px-6">
                 <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                     <input
                         type="text"
                         placeholder="Search events..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="glass-input w-full pl-10 pr-4 py-2"
+                        className="glass-input rounded-4xl! w-full px-14! py-2"
                     />
                 </div>
             </div>
 
-            {/* Event List */}
             <div className="grid gap-6">
                 {filteredEvents.length === 0 ? (
                     <div className="text-center py-12 glass-card">
@@ -96,7 +94,7 @@ const OrgEvents = () => {
                     </div>
                 ) : (
                     filteredEvents.map((event) => (
-                        <div key={event.eventId} className="glass-card p-6 hover:bg-white/5 transition-colors">
+                        <div key={event.eventId} className="glass-card py-8 px-12 hover:bg-white/5 transition-colors">
                             <div className="flex justify-between items-start">
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-3">
@@ -133,20 +131,20 @@ const OrgEvents = () => {
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => navigate(`/org/events/${event.eventId}`)}
-                                        className="px-3 py-1 text-blue-400 hover:bg-blue-500/10 rounded-md text-sm font-medium transition-colors"
+                                        className="px-3 py-1 text-amber-200 hover:border hover:bg-amber-200/10 rounded-md text-sm font-medium transition-colors"
                                     >
                                         View Details
                                     </button>
                                     <button
                                         onClick={() => navigate(`/org/events/edit/${event.eventId}`)}
-                                        className="p-2 text-slate-400 hover:text-slate-200 hover:bg-white/10 rounded-md transition-colors"
+                                        className="p-2 text-slate-400 hover:text-slate-200 hover:bg-white/10 hover:border rounded-md transition-colors"
                                         title="Edit Event"
                                     >
                                         <Edit size={18} />
                                     </button>
                                     <button
                                         onClick={() => handleDelete(event.eventId)}
-                                        className="p-2 text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                                        className="p-2 text-red-400 hover:bg-red-500/10 hover:border rounded-md transition-colors"
                                         title="Delete Event"
                                     >
                                         <Trash2 size={18} />

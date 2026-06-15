@@ -83,8 +83,6 @@ const ImageUploadModal = ({ isOpen, onClose, onUploadSuccess, title = "Upload Im
         try {
             const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
             const file = new File([croppedBlob], "cropped.jpg", { type: "image/jpeg" });
-
-            // Upload
             const url = await fileService.upload(file);
             onUploadSuccess(url);
             onClose();
@@ -102,17 +100,17 @@ const ImageUploadModal = ({ isOpen, onClose, onUploadSuccess, title = "Upload Im
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
-                <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+            <div className="bg-white w-96 h-80 rounded-2xl shadow-xl overflow-hidden flex flex-col">
+                <div className="py-4 px-8 border-b border-gray-100 flex justify-between items-center">
                     <h3 className="font-bold text-gray-800">{title}</h3>
                     <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
                         <HiXMark className="w-6 h-6" />
                     </button>
                 </div>
 
-                <div className="flex-1 p-4 bg-gray-50 relative min-h-[300px]">
+                <div className="flex-1 p-4 bg-gray-50 relative min-h-[200px]">
                     {imageSrc ? (
-                        <div className="relative w-full h-full min-h-[300px]">
+                        <div className="relative w-full h-full min-h-[200px]">
                             <Cropper
                                 image={imageSrc}
                                 crop={crop}

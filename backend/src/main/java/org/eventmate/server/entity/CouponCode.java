@@ -18,6 +18,8 @@
 
         private String code;
 
+        private Integer discount;
+
         private Long eventId;
 
         private Boolean isUsed = false;

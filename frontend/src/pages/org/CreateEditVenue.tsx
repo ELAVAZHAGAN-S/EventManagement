@@ -96,16 +96,16 @@ const CreateEditVenue = () => {
             </button>
 
             <div className="glass-card overflow-hidden">
-                <div className="p-6 border-b border-white/10 bg-white/5">
-                    <h1 className="text-xl font-bold text-slate-100">
+                <div className="py-6 px-10 border-b border-white/10">
+                    <h1 className="text-xl font-bold text-white">
                         {isEditMode ? 'Edit Venue' : 'Add New Venue'}
                     </h1>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="py-6 px-10 space-y-6">
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1">Venue Name</label>
+                        <div className='mb-6'>
+                            <label className="block text-sm font-medium text-amber-200 mb-1">Venue Name</label>
                             <input
                                 type="text"
                                 name="name"
@@ -113,11 +113,12 @@ const CreateEditVenue = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 className="glass-input w-full"
+                                placeholder='Enter venue name'
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-slate-300 mb-1">Address</label>
+                        <div className='mb-6'>
+                            <label className="block text-sm font-medium text-amber-200 mb-1">Address</label>
                             <input
                                 type="text"
                                 name="address"
@@ -125,12 +126,13 @@ const CreateEditVenue = () => {
                                 value={formData.address}
                                 onChange={handleChange}
                                 className="glass-input w-full"
+                                placeholder='Enter venue address'
                             />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">City</label>
+                            <div className='mb-6'>
+                                <label className="block text-sm font-medium text-amber-200 mb-1">City</label>
                                 <input
                                     type="text"
                                     name="city"
@@ -138,10 +140,11 @@ const CreateEditVenue = () => {
                                     value={formData.city}
                                     onChange={handleChange}
                                     className="glass-input w-full"
+                                    placeholder='Enter city'
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">State</label>
+                            <div className='mb-6'>
+                                <label className="block text-sm font-medium text-amber-200 mb-1">State</label>
                                 <input
                                     type="text"
                                     name="state"
@@ -149,13 +152,14 @@ const CreateEditVenue = () => {
                                     value={formData.state}
                                     onChange={handleChange}
                                     className="glass-input w-full"
+                                    placeholder='Enter state'
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Country</label>
+                            <div className='mb-6'>
+                                <label className="block text-sm font-medium text-amber-200 mb-1">Country</label>
                                 <input
                                     type="text"
                                     name="country"
@@ -163,10 +167,11 @@ const CreateEditVenue = () => {
                                     value={formData.country}
                                     onChange={handleChange}
                                     className="glass-input w-full"
+                                    placeholder='Enter country'
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Capacity</label>
+                            <div className='mb-6'>
+                                <label className="block text-sm font-medium text-amber-200 mb-1">Capacity</label>
                                 <input
                                     type="number"
                                     name="capacity"
@@ -175,13 +180,14 @@ const CreateEditVenue = () => {
                                     value={formData.capacity}
                                     onChange={handleChange}
                                     className="glass-input w-full"
+                                    placeholder='Enter maximum capacity'
                                 />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-slate-300 mb-1">Number of Floors</label>
+                            <div className='mb-6'>
+                                <label className="block text-sm font-medium text-amber-200 mb-1">Number of Floors</label>
                                 <input
                                     type="number"
                                     name="numberOfFloors"
@@ -190,12 +196,13 @@ const CreateEditVenue = () => {
                                     value={formData.numberOfFloors}
                                     onChange={handleChange}
                                     className="glass-input w-full"
+                                    placeholder='Enter number of floors'
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10 flex justify-end gap-3">
+                    <div className="py-6 border-t border-white/10 flex justify-end gap-3">
                         <button
                             type="button"
                             onClick={() => navigate('/org/venues')}
@@ -206,7 +213,7 @@ const CreateEditVenue = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="px-6 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-colors font-medium shadow-sm disabled:opacity-50"
+                            className="px-6 py-2 bg-amber-200 text-black rounded-lg hover:bg-amber-100 transition-colors font-medium shadow-sm disabled:opacity-50"
                         >
                             {loading ? 'Saving...' : (isEditMode ? 'Update Venue' : 'Create Venue')}
                         </button>

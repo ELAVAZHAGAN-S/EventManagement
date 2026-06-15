@@ -131,7 +131,7 @@ const ResetPassword = () => {
         if (!error) return null;
         return (
             <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-                <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+                <HiExclamationCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
             </div>
         );
@@ -144,25 +144,18 @@ const ResetPassword = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
-            {/* Background decorations */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-            </div>
-
-            <div className="glass-card max-w-md w-full p-8 relative">
+            <div className="glass-card max-w-md w-full py-12 px-8 relative">
                 <div className="text-center mb-8">
                     <div className="flex items-center justify-center gap-2 mb-3">
-                        <HiShieldCheck className="w-10 h-10 text-green-400" />
+                        <HiShieldCheck className="w-15 h-15 text-green-400 float-animation" />
                     </div>
-                    <h2 className="text-3xl font-extrabold text-gradient mb-2">Almost Done!</h2>
-                    <p className="text-slate-400">Create a new strong password</p>
+                    <h2 className="text-sm font-extrabold text-amber-200 mb-2">Almost Done!</h2>
+                    <p className="text-white">Create a new strong password</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* New Password */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <div className="mb-10">
+                        <label className="block text-sm font-medium text-amber-200 mb-2">
                             New Password
                             <span className="text-red-400 ml-1">*</span>
                             <span className="text-slate-500 text-xs ml-2">(min. 8 characters)</span>
@@ -180,7 +173,7 @@ const ResetPassword = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-violet-400 transition-colors"
+                                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-amber-100 transition-colors"
                             >
                                 {showPassword ? <HiEyeSlash className="w-5 h-5" /> : <HiEye className="w-5 h-5" />}
                             </button>
@@ -188,9 +181,8 @@ const ResetPassword = () => {
                         <FieldError error={touched.newPassword ? errors.newPassword : undefined} />
                     </div>
 
-                    {/* Confirm Password */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-300 mb-2">
+                    <div className="mb-10">
+                        <label className="block text-sm font-medium text-amber-200 mb-2">
                             Confirm Password
                             <span className="text-red-400 ml-1">*</span>
                         </label>
@@ -207,7 +199,7 @@ const ResetPassword = () => {
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-violet-400 transition-colors"
+                                className="absolute inset-y-0 right-3 flex items-center justify-center text-slate-400 hover:text-amber-100 transition-colors"
                             >
                                 {showConfirmPassword ? <HiEyeSlash className="w-5 h-5" /> : <HiEye className="w-5 h-5" />}
                             </button>
@@ -218,8 +210,8 @@ const ResetPassword = () => {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="btn-glow w-full py-3 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
+                        className="btn2">
+                        <span className="spn2">
                         {isLoading ? (
                             <span className="flex items-center justify-center gap-2">
                                 <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
@@ -230,7 +222,7 @@ const ResetPassword = () => {
                             </span>
                         ) : (
                             'Reset Password'
-                        )}
+                        )}</span>
                     </button>
                 </form>
             </div>

@@ -10,9 +10,6 @@ interface ValidatedInputProps extends React.InputHTMLAttributes<HTMLInputElement
     icon?: React.ReactNode;
 }
 
-/**
- * Reusable input component with validation styling and error display
- */
 export const ValidatedInput: React.FC<ValidatedInputProps> = ({
     label,
     error,
@@ -48,7 +45,7 @@ export const ValidatedInput: React.FC<ValidatedInputProps> = ({
             </div>
             {showError && (
                 <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-                    <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+                    <HiExclamationCircle className="w-4 h-4 shrink-0" />
                     <span>{error}</span>
                 </div>
             )}
@@ -64,9 +61,6 @@ interface ValidatedTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAr
     hint?: string;
 }
 
-/**
- * Reusable textarea component with validation styling
- */
 export const ValidatedTextarea: React.FC<ValidatedTextareaProps> = ({
     label,
     error,
@@ -94,7 +88,7 @@ export const ValidatedTextarea: React.FC<ValidatedTextareaProps> = ({
             />
             {showError && (
                 <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-                    <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+                    <HiExclamationCircle className="w-4 h-4 shrink-0" />
                     <span>{error}</span>
                 </div>
             )}
@@ -111,9 +105,6 @@ interface ValidatedSelectProps extends React.SelectHTMLAttributes<HTMLSelectElem
     options: { value: string; label: string }[];
 }
 
-/**
- * Reusable select component with validation styling
- */
 export const ValidatedSelect: React.FC<ValidatedSelectProps> = ({
     label,
     error,
@@ -146,7 +137,7 @@ export const ValidatedSelect: React.FC<ValidatedSelectProps> = ({
             </select>
             {showError && (
                 <div className="flex items-center gap-1 mt-1.5 text-red-400 text-sm">
-                    <HiExclamationCircle className="w-4 h-4 flex-shrink-0" />
+                    <HiExclamationCircle className="w-4 h-4 shrink-0" />
                     <span>{error}</span>
                 </div>
             )}
@@ -154,9 +145,6 @@ export const ValidatedSelect: React.FC<ValidatedSelectProps> = ({
     );
 };
 
-/**
- * Common validation rules
- */
 export const ValidationRules = {
     required: (value: string, fieldName: string = 'This field') =>
         !value?.trim() ? `${fieldName} is required` : undefined,
@@ -174,13 +162,13 @@ export const ValidationRules = {
         value && value.length > max ? `${fieldName} cannot exceed ${max} characters` : undefined,
 
     phone: (value: string) => {
-        if (!value) return undefined; // Optional
+        if (!value) return undefined;
         if (!/^[0-9]{10,15}$/.test(value)) return 'Phone must be 10-15 digits';
         return undefined;
     },
 
     url: (value: string) => {
-        if (!value) return undefined; // Optional
+        if (!value) return undefined;
         try {
             new URL(value);
             return undefined;
@@ -202,9 +190,6 @@ export const ValidationRules = {
         value !== compareValue ? message : undefined
 };
 
-/**
- * Hook for form validation
- */
 export const useFormValidation = <T extends Record<string, any>>(initialValues: T) => {
     const [values, setValues] = React.useState<T>(initialValues);
     const [errors, setErrors] = React.useState<Partial<Record<keyof T, string>>>({});
@@ -213,7 +198,6 @@ export const useFormValidation = <T extends Record<string, any>>(initialValues: 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setValues(prev => ({ ...prev, [name]: value }));
-        // Clear error when user starts typing
         if (errors[name as keyof T]) {
             setErrors(prev => ({ ...prev, [name]: undefined }));
         }

@@ -71,16 +71,15 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
             <div className="glass-card rounded-xl w-full max-w-md animate-in fade-in zoom-in duration-200 flex flex-col max-h-[85vh] text-white">
-                <div className="flex justify-between items-center p-6 border-b border-white/10 flex-shrink-0">
-                    <h3 className="text-xl font-bold text-white text-glow">Add Guest / Speaker</h3>
+                <div className="flex justify-between items-center py-6 px-10 border-b border-white/10 shrink-0">
+                    <h3 className="text-2xl font-bold text-white">Add Guest / Speaker</h3>
                     <button onClick={onClose} className="text-white/50 hover:text-white transition-colors">
                         <X size={24} />
                     </button>
                 </div>
 
-                <div className="p-6 overflow-y-auto custom-scrollbar">
+                <div className="py-6 px-10 overflow-y-auto custom-scrollbar">
                     <form onSubmit={handleSubmit} className="space-y-5">
-                        {/* Photo Upload Section */}
                         <div className="flex justify-center">
                             {photo ? (
                                 <div className="relative group w-32 h-32 rounded-full overflow-hidden border-4 border-white/20 shadow-lg shadow-purple-500/20">
@@ -94,7 +93,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                                     </button>
                                 </div>
                             ) : (
-                                <div className="w-32 h-32 rounded-full border-2 border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:border-purple-500 hover:text-purple-400 hover:bg-purple-500/10 transition-all cursor-pointer relative bg-white/5">
+                                <div className="w-32 h-32 rounded-full border-2 border-dashed border-white/30 flex flex-col items-center justify-center text-white/50 hover:border-amber-200 hover:text-amber-200 hover:bg-amber-500/10 transition-all cursor-pointer relative bg-white/5">
                                     <input
                                         type="file"
                                         accept="image/*"
@@ -114,7 +113,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                             )}
                         </div>
 
-                        <div>
+                        <div className='mb-8'>
                             <label className="block text-sm font-medium text-slate-300 mb-1">Name</label>
                             <input
                                 type="text"
@@ -126,7 +125,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                             />
                         </div>
 
-                        <div>
+                        <div className='mb-8'>
                             <label className="block text-sm font-medium text-slate-300 mb-1">Role / Designation</label>
                             <input
                                 type="text"
@@ -137,7 +136,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                             />
                         </div>
 
-                        <div>
+                        <div className='mb-8'>
                             <label className="block text-sm font-medium text-slate-300 mb-1">LinkedIn Profile</label>
                             <input
                                 type="url"
@@ -148,7 +147,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                             />
                         </div>
 
-                        <div>
+                        <div className='mb-8'>
                             <label className="block text-sm font-medium text-slate-300 mb-1">Short Bio</label>
                             <textarea
                                 value={about}
@@ -170,7 +169,7 @@ const GuestEntryModal: React.FC<GuestEntryModalProps> = ({ isOpen, onClose, onSa
                             <button
                                 type="submit"
                                 disabled={uploading}
-                                className="px-6 py-2 btn-glow text-white rounded-lg font-bold disabled:opacity-50"
+                                className="px-6 py-2 text-black cursor-pointer bg-amber-200 rounded-lg font-bold disabled:opacity-50"
                             >
                                 Add Guest
                             </button>

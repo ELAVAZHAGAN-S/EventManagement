@@ -30,11 +30,11 @@ const SeatSelectionModal = ({ totalCapacity, bookedSeats, onClose, onConfirm }: 
             const isBooked = bookedSeats.includes(i);
             const isSelected = selectedSeat === i;
 
-            let bgClass = "bg-green-500/20 hover:bg-green-500/30 text-green-300 border-green-500/30";
+            let bgClass = "bg-amber-100/10 hover:bg-amber-200 border-amber-200 text-amber-200 hover:text-black";
             if (isBooked) {
-                bgClass = "bg-red-500/10 text-red-500/30 cursor-not-allowed border-red-500/10";
+                bgClass = "bg-amber-200/30 text-amber-200/30 cursor-not-allowed border-amber-200/10";
             } else if (isSelected) {
-                bgClass = "bg-blue-500 text-white border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.5)] transform scale-105";
+                bgClass = "bg-amber-200 text-black scale-105";
             }
 
             seats.push(
@@ -59,41 +59,38 @@ const SeatSelectionModal = ({ totalCapacity, bookedSeats, onClose, onConfirm }: 
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-            <div className="glass-card w-full max-w-2xl p-6 relative animate-fadeIn flex flex-col max-h-[90vh] text-white">
-                <button onClick={onClose} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center pt-4 z-60">
+            <div className="glass-card w-[550px] max-w-2xl py-6 px-10 relative animate-fadeIn flex flex-col max-h-[90vh] text-white">
+                <button onClick={onClose} className="absolute top-10 right-10 cursor-pointer text-white/50 hover:text-amber-200 transition-colors">
                     <X size={24} />
                 </button>
 
-                <div className="text-center mb-6">
-                    <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 text-glow">Select Your Seat</h2>
+                <div className="text-center mb-2">
+                    <h2 className="text-2xl font-bold text-white">Select Your Seat</h2>
                     <p className="text-slate-400">Floor {currentFloor} of {totalFloors}</p>
                 </div>
 
-                {/* Legend */}
                 <div className="flex justify-center gap-6 mb-4 text-sm">
                     <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-green-500/20 border border-green-500/30"></div>
-                        <span className="text-slate-300">Available</span>
+                        <div className="w-4 h-4 rounded bg-green-300 border border-green-300"></div>
+                        <span className="text-green-300">Available</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-red-500/10 border border-red-500/10"></div>
-                        <span className="text-slate-500">Booked</span>
+                        <div className="w-4 h-4 rounded bg-amber-200/30 border border-amber-200"></div>
+                        <span className="text-amber-200">Booked</span>
                     </div>
                     <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded bg-blue-500 border border-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></div>
-                        <span className="text-white font-medium">Selected</span>
+                        <div className="w-4 h-4 rounded bg-amber-200"></div>
+                        <span className="text-amber-200 font-medium">Selected</span>
                     </div>
                 </div>
 
-                {/* Grid Container */}
-                <div className="flex-1 overflow-y-auto min-h-[300px] p-2 sm:p-4 bg-black/20 rounded-xl border border-white/10 mb-6 custom-scrollbar">
-                    <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2 sm:gap-3 place-items-center">
+                <div className="flex-1 overflow-y-auto max-h-[300px] px-6 py-6 bg-black/20 rounded-4xl border border-amber-200 mb-6 custom-scrollbar">
+                    <div className="grid grid-cols-5 md:grid-cols-8 gap-2 sm:gap-3 place-items-center">
                         {renderGrid()}
                     </div>
                 </div>
 
-                {/* Footer / Controls */}
                 <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <div className="flex items-center gap-2">
                         <button
@@ -113,12 +110,12 @@ const SeatSelectionModal = ({ totalCapacity, bookedSeats, onClose, onConfirm }: 
                         </button>
                     </div>
 
-                    <div className="flex gap-4 items-center">
-                        {selectedSeat && <span className="text-lg font-bold text-blue-400 text-glow">Seat {selectedSeat}</span>}
+                    <div className="flex gap-5 items-center">
+                        {selectedSeat && <span className="text-lg font-bold text-amber-200">Seat {selectedSeat}</span>}
                         <button
                             onClick={handleConfirm}
                             disabled={!selectedSeat}
-                            className="px-8 py-3 btn-glow text-white rounded-xl font-bold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none"
+                            className="px-6 py-3 bg-amber-200 cursor-pointer text-black rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-amber-100 transition-colors"
                         >
                             Confirm Selection
                         </button>
